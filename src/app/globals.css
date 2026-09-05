@@ -1,0 +1,165 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   HabitPixel — Global Design System
+   Tailwind v4: theme defined via CSS @theme block
+   ============================================================ */
+
+@theme {
+  /* ---- Color Tokens ---------------------------------------- */
+
+  /* Backgrounds */
+  --color-bg-base:    #08090C;
+  --color-bg-surface: #10121A;
+  --color-bg-elevated:#141824;
+
+  /* Borders */
+  --color-border-subtle: #1E2230;
+  --color-border-mid:    #2E3450;
+
+  /* Text */
+  --color-text-primary:   #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted:     #64748B;
+
+  /* Accent — Neon Mint (primary) */
+  --color-accent-mint:    #10B981;
+  --color-accent-mint-dim:#0D9468;
+
+  /* Accent — Retro Fuchsia */
+  --color-accent-fuchsia:    #EC4899;
+  --color-accent-fuchsia-dim:#C4376E;
+
+  /* Accent — Electric Cyan */
+  --color-accent-cyan:    #06B6D4;
+  --color-accent-cyan-dim:#0891B2;
+
+  /* Accent — Amber XP */
+  --color-accent-amber: #F59E0B;
+
+  /* Accent — Violet */
+  --color-accent-violet: #A78BFA;
+
+  /* ---- Typography ------------------------------------------ */
+  --font-sans: var(--font-sans), 'Outfit', system-ui, sans-serif;
+  --font-mono: var(--font-mono), 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ---- Radius ---------------------------------------------- */
+  --radius-pixel: 2px;
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    14px;
+  --radius-xl:    20px;
+
+  /* ---- Shadows / Glows ------------------------------------- */
+  --shadow-neon-mint:    0 0 12px #10B98155;
+  --shadow-neon-fuchsia: 0 0 12px #EC489955;
+  --shadow-neon-cyan:    0 0 12px #06B6D455;
+}
+
+/* ============================================================
+   Base Reset & Globals
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #08090C;
+  color: #F1F5F9;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   Scrollbar Theming (webkit)
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E2230;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2E3450;
+}
+
+/* ============================================================
+   Utility: Neon Text Glow
+   ============================================================ */
+
+.glow-mint    { text-shadow: 0 0 8px #10B98188; }
+.glow-fuchsia { text-shadow: 0 0 8px #EC489988; }
+.glow-cyan    { text-shadow: 0 0 8px #06B6D488; }
+.glow-amber   { text-shadow: 0 0 8px #F59E0B88; }
+
+/* ============================================================
+   Utility: Pixel border (1px solid neon)
+   ============================================================ */
+
+.pixel-border-mint    { border: 1px solid #10B98166; box-shadow: 0 0 6px #10B98133; }
+.pixel-border-fuchsia { border: 1px solid #EC489966; box-shadow: 0 0 6px #EC489933; }
+.pixel-border-cyan    { border: 1px solid #06B6D466; box-shadow: 0 0 6px #06B6D433; }
+
+/* ============================================================
+   Animations
+   ============================================================ */
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pixel-flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.8; }
+  94%       { opacity: 1; }
+  97%       { opacity: 0.9; }
+  98%       { opacity: 1; }
+}
+
+/* Subtle CRT scan line overlay (apply to a fixed overlay div) */
+.scanline-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================================
+   Hide scrollbar (utility class)
+   ============================================================ */
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
