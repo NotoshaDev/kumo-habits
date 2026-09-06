@@ -2,10 +2,11 @@
 
 import React, { memo, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Plus } from 'lucide-react'
+import { Plus, Pencil } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PixelCheckbox } from '@/components/ui/PixelCheckbox'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
+import { EditHabitModal } from '@/components/ui/EditHabitModal'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import { getMonthDays, toISODateString, isToday, getTodayString } from '@/lib/date-utils'
 import { getHabitConsistency } from '@/lib/consistency'
@@ -75,22 +76,37 @@ const HabitNameCell = memo(function HabitNameCell({ habit, consistency }: HabitN
   const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
 
   return (
-    <td className="sticky left-0 z-20 bg-[#10121A] border-r border-[#1E2230] min-w-[180px] max-w-[220px] px-3 py-1.5">
-      <div className="flex items-center gap-2">
-        <span
-          className="flex items-center justify-center w-7 h-7 rounded-md shrink-0"
-          style={{ backgroundColor: `${habit.color_hex}20`, color: habit.color_hex }}
-        >
-          <Icon size={14} />
-        </span>
-        <div className="flex flex-col min-w-0">
-          <span className="text-[#F1F5F9] text-xs font-medium truncate leading-tight">
-            {habit.name}
+    <td className="sticky left-0 z-20 bg-[#10121A] border-r border-[#1E2230] min-w-[180px] max-w-[220px] px-3 py-1.5 group/cell">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <span
+            className="flex items-center justify-center w-7 h-7 rounded-md shrink-0"
+            style={{ backgroundColor: `${habit.color_hex}20`, color: habit.color_hex }}
+          >
+            <Icon size={14} />
           </span>
-          <span className="font-mono text-[10px] leading-tight" style={{ color: habit.color_hex }}>
-            {consistency}%
-          </span>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[#F1F5F9] text-xs font-medium truncate leading-tight">
+              {habit.name}
+            </span>
+            <span className="font-mono text-[10px] leading-tight" style={{ color: habit.color_hex }}>
+              {consistency}%
+            </span>
+          </div>
         </div>
+
+        {/* Edit Button */}
+        <EditHabitModal
+          habit={habit}
+          trigger={
+            <button
+              className="opacity-0 group-hover/cell:opacity-100 p-1 rounded hover:bg-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] transition-all shrink-0"
+              title="Editar Hábito"
+            >
+              <Pencil size={12} />
+            </button>
+          }
+        />
       </div>
     </td>
   )

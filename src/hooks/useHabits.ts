@@ -368,3 +368,102 @@ export function useDeleteHabit() {
   })
 }
 
+// ---- Update Habit Mutation -----------------------------------
+
+export interface UpdateHabitArgs {
+  id: string
+  name: string
+  category: string
+  color_hex: string
+  icon_key: string
+}
+
+export function useUpdateHabit() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (args: UpdateHabitArgs): Promise<HabitRow> => {
+      if (isMock) {
+        await new Promise((r) => setTimeout(r, 150))
+        const idx = MOCK_HABITS.findIndex((h) => h.id === args.id)
+        if (idx !== -1) {
+          MOCK_HABITS[idx] = {
+            ...MOCK_HABITS[idx],
+            name: args.name,
+            category: args.category || 'General',
+            color_hex: args.color_hex,
+            icon_key: args.icon_key,
+          }
+          return MOCK_HABITS[idx]
+        }
+        throw new Error('Habit not found')
+      }
+
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { data, error } = await db
+        .from('habits')
+        .update({
+          name: args.name,
+          category: args.category || 'General',
+          color_hex: args.color_hex,
+          icon_key: args.icon_key,
+        })
+        .eq('id', args.id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data
+    },
+
+    onSuccess: (updatedHabit) => {
+      queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
+        return (old ?? []).map((h) => (h.id === updatedHabit.id ? updatedHabit : h))
+      })
+      if (!isMock) {
+        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
+      }
+    },
+  })
+}
+
+// ---- Archive Habit Mutation -----------------------------------
+
+export function useArchiveHabit() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (habitId: string) => {
+      if (isMock) {
+        await new Promise((r) => setTimeout(r, 100))
+        const idx = MOCK_HABITS.findIndex((h) => h.id === habitId)
+        if (idx !== -1) {
+          MOCK_HABITS[idx].is_archived = true
+        }
+        return habitId
+      }
+
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { error } = await db.from('habits').update({ is_archived: true }).eq('id', habitId)
+      if (error) throw error
+      return habitId
+    },
+
+    onSuccess: (archivedId) => {
+      queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
+        return (old ?? []).filter((h) => h.id !== archivedId)
+      })
+      if (!isMock) {
+        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
+      }
+    },
+  })
+}
+
+

@@ -2,16 +2,18 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Zap, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Zap, Plus, Volume2, VolumeX, Trophy } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useHabits, useHabitLogs, useToggleHabitLog } from '@/hooks/useHabits'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
 import { DesktopSidePanel } from '@/components/desktop/DesktopSidePanel'
 import { MobileTrackerView } from '@/components/mobile/MobileTrackerView'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
+import { AchievementsModal } from '@/components/ui/AchievementsModal'
+import { retroAudio } from '@/lib/sound-effects'
 import { formatMonthLabel, getPrevMonth, getNextMonth } from '@/lib/date-utils'
 import { cn } from '@/lib/utils'
-import type { MonthlyGoalRow } from '@/types/database'
+import type { MonthlyGoalRow, HabitRow, HabitLogRow } from '@/types/database'
 
 // ---- Types --------------------------------------------------
 
@@ -78,11 +80,21 @@ function DesktopHeader({
   month,
   onPrev,
   onNext,
+  isMuted,
+  onToggleSound,
+  habits,
+  logs,
+  userXP,
 }: {
   year: number
   month: number
   onPrev: () => void
   onNext: () => void
+  isMuted: boolean
+  onToggleSound: () => void
+  habits: HabitRow[]
+  logs: HabitLogRow[]
+  userXP: number
 }) {
   return (
     <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#1E2230] bg-[#10121A]/50 backdrop-blur-md shrink-0">
@@ -106,8 +118,39 @@ function DesktopHeader({
         <MonthNavigator year={year} month={month} onPrev={onPrev} onNext={onNext} />
       </div>
 
-      {/* Action (Right) */}
-      <div className="flex items-center justify-end gap-3">
+      {/* Actions (Right) */}
+      <div className="flex items-center justify-end gap-2.5">
+        {/* Audio Mute Toggle */}
+        <button
+          onClick={onToggleSound}
+          className={cn(
+            'flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-150',
+            isMuted
+              ? 'border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] bg-[#08090C]'
+              : 'border-[#10B981]/40 text-[#10B981] bg-[#10B981]/10',
+          )}
+          title={isMuted ? 'Activar Sonido Retro 8-bit' : 'Silenciar Audio'}
+          aria-label="Toggle audio"
+        >
+          {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+        </button>
+
+        {/* Achievements Modal Trigger */}
+        <AchievementsModal
+          habits={habits}
+          logs={logs}
+          userXP={userXP}
+          trigger={
+            <button
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#F59E0B]/20 transition-all duration-150"
+              title="Ver Logros y Trofeos"
+              aria-label="Trofeos"
+            >
+              <Trophy size={15} />
+            </button>
+          }
+        />
+
         <AddHabitModal
           trigger={
             <button className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-black font-mono text-xs font-bold transition-all duration-150 shadow-md shadow-emerald-500/20 active:scale-95">
@@ -128,11 +171,21 @@ function MobileHeader({
   month,
   onPrev,
   onNext,
+  isMuted,
+  onToggleSound,
+  habits,
+  logs,
+  userXP,
 }: {
   year: number
   month: number
   onPrev: () => void
   onNext: () => void
+  isMuted: boolean
+  onToggleSound: () => void
+  habits: HabitRow[]
+  logs: HabitLogRow[]
+  userXP: number
 }) {
   return (
     <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-[#1E2230] bg-[#10121A]/80 backdrop-blur-md">
@@ -142,6 +195,33 @@ function MobileHeader({
       </div>
 
       <div className="flex items-center gap-2">
+        <button
+          onClick={onToggleSound}
+          className={cn(
+            'flex items-center justify-center w-7 h-7 rounded-lg border transition-colors',
+            isMuted
+              ? 'border-[#1E2230] text-[#64748B]'
+              : 'border-[#10B981]/40 text-[#10B981] bg-[#10B981]/10',
+          )}
+          aria-label="Toggle audio"
+        >
+          {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+        </button>
+
+        <AchievementsModal
+          habits={habits}
+          logs={logs}
+          userXP={userXP}
+          trigger={
+            <button
+              className="flex items-center justify-center w-7 h-7 rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
+              aria-label="Trofeos"
+            >
+              <Trophy size={14} />
+            </button>
+          }
+        />
+
         <MonthNavigator year={year} month={month} onPrev={onPrev} onNext={onNext} />
 
         <AddHabitModal
@@ -188,6 +268,7 @@ export function HabitDashboard({
   const now = new Date()
   const [year, setYear] = useState(initialYear ?? now.getFullYear())
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1)
+  const [isMuted, setIsMuted] = useState(() => retroAudio.isMuted())
 
   const isMobile = useIsMobile()
 
@@ -197,6 +278,11 @@ export function HabitDashboard({
   const toggleMutation = useToggleHabitLog(year, month)
 
   const isLoading = habitsLoading || logsLoading
+
+  const handleToggleSound = useCallback(() => {
+    const muted = retroAudio.toggleMute()
+    setIsMuted(muted)
+  }, [])
 
   // Navigation handlers
   const handlePrevMonth = useCallback(() => {
@@ -215,9 +301,14 @@ export function HabitDashboard({
     setMonth(next.month)
   }, [year, month])
 
-  // Toggle handler — delegates to mutation (optimistic)
+  // Toggle handler — plays retro 8-bit sound and delegates to mutation
   const handleToggle = useCallback(
     (habitId: string, date: string, currentlyCompleted: boolean) => {
+      if (!currentlyCompleted) {
+        retroAudio.playCheck()
+      } else {
+        retroAudio.playUncheck()
+      }
       toggleMutation.mutate({ habitId, date, currentlyCompleted })
     },
     [toggleMutation],
@@ -229,7 +320,17 @@ export function HabitDashboard({
   if (isMobile) {
     return (
       <div className="flex flex-col h-dvh bg-[#08090C] text-[#F1F5F9]">
-        <MobileHeader year={year} month={month} onPrev={handlePrevMonth} onNext={handleNextMonth} />
+        <MobileHeader
+          year={year}
+          month={month}
+          onPrev={handlePrevMonth}
+          onNext={handleNextMonth}
+          isMuted={isMuted}
+          onToggleSound={handleToggleSound}
+          habits={habits}
+          logs={logs}
+          userXP={userXP}
+        />
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
@@ -248,7 +349,17 @@ export function HabitDashboard({
   // Desktop layout
   return (
     <div className="flex flex-col h-screen bg-[#08090C] text-[#F1F5F9] overflow-hidden">
-      <DesktopHeader year={year} month={month} onPrev={handlePrevMonth} onNext={handleNextMonth} />
+      <DesktopHeader
+        year={year}
+        month={month}
+        onPrev={handlePrevMonth}
+        onNext={handleNextMonth}
+        isMuted={isMuted}
+        onToggleSound={handleToggleSound}
+        habits={habits}
+        logs={logs}
+        userXP={userXP}
+      />
 
       <div className="flex flex-1 gap-0 overflow-hidden">
         {/* Main matrix area */}

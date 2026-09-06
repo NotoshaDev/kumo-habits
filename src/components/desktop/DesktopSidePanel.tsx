@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { RadialProgress } from '@/components/ui/RadialProgress'
 import { WeeklyBreakdownChart } from '@/components/stats/WeeklyBreakdownChart'
 import { HabitColorBadge } from '@/components/ui/HabitColorBadge'
+import { AchievementsModal } from '@/components/ui/AchievementsModal'
 import type { HabitRow, HabitLogRow, MonthlyGoalRow } from '@/types/database'
 import {
   getHabitConsistency,
@@ -32,7 +33,7 @@ interface DesktopSidePanelProps {
 
 // ---- Sub-components -----------------------------------------
 
-function XPBar({ xp, level }: { xp: number; level: number }) {
+function XPBar({ xp, level, habits, logs }: { xp: number; level: number; habits: HabitRow[]; logs: HabitLogRow[] }) {
   const { xpToNextLevel, progress } = getLevelFromXP(xp)
 
   return (
@@ -42,9 +43,25 @@ function XPBar({ xp, level }: { xp: number; level: number }) {
           <Zap size={14} className="text-[#F59E0B]" style={{ filter: 'drop-shadow(0 0 4px #F59E0B88)' }} />
           <span className="font-mono text-xs text-[#94A3B8] uppercase tracking-widest">Nivel</span>
         </div>
-        <span className="font-mono text-lg font-bold text-[#F59E0B]" style={{ textShadow: '0 0 8px #F59E0B66' }}>
-          {level}
-        </span>
+        <div className="flex items-center gap-2">
+          <AchievementsModal
+            habits={habits}
+            logs={logs}
+            userXP={xp}
+            trigger={
+              <button
+                className="flex items-center gap-1 px-2 py-0.5 rounded border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B] font-mono text-[10px] font-bold hover:bg-[#F59E0B]/20 transition-all"
+                title="Ver Medallas"
+              >
+                <Trophy size={11} />
+                <span>MEDALLAS</span>
+              </button>
+            }
+          />
+          <span className="font-mono text-lg font-bold text-[#F59E0B]" style={{ textShadow: '0 0 8px #F59E0B66' }}>
+            {level}
+          </span>
+        </div>
       </div>
 
       {/* XP progress bar */}
@@ -135,7 +152,7 @@ export function DesktopSidePanel({
   return (
     <aside className="w-full flex flex-col gap-4">
       {/* XP / Level */}
-      <XPBar xp={userXP} level={userLevel} />
+      <XPBar xp={userXP} level={userLevel} habits={habits} logs={logs} />
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 gap-2">

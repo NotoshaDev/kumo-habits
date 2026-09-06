@@ -6,6 +6,7 @@ import { PixelCheckbox } from '@/components/ui/PixelCheckbox'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
 import { HabitColorBadge } from '@/components/ui/HabitColorBadge'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
+import { EditHabitModal } from '@/components/ui/EditHabitModal'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import {
   getMonthDays,
@@ -18,7 +19,7 @@ import {
 import { getHabitConsistency } from '@/lib/consistency'
 import { ICON_MAP } from '@/lib/icon-map'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, LayoutGrid, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutGrid, Plus, Pencil } from 'lucide-react'
 
 // ---- Types --------------------------------------------------
 
@@ -118,9 +119,23 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
             )}
           </div>
         </div>
-        <span className="font-mono text-sm font-bold" style={{ color: habit.color_hex }}>
-          {consistency}%
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-sm font-bold" style={{ color: habit.color_hex }}>
+            {consistency}%
+          </span>
+
+          <EditHabitModal
+            habit={habit}
+            trigger={
+              <button
+                className="p-1 rounded hover:bg-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] transition-colors"
+                title="Editar Hábito"
+              >
+                <Pencil size={14} />
+              </button>
+            }
+          />
+        </div>
       </div>
 
       {/* Week day checkboxes */}
