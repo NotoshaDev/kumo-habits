@@ -1,5 +1,5 @@
 -- ============================================================
--- HabitPixel: Initial Schema Migration
+-- Kumo Habits by NotoshaDev: Initial Schema Migration
 -- Supabase / PostgreSQL
 -- ============================================================
 
@@ -166,7 +166,7 @@ CREATE POLICY "monthly_goals: users can delete own goals"
   USING (auth.uid() = user_id);
 
 -- ============================================================
--- TRIGGER: Auto-create profile on new Supabase Auth user
+-- TRIGGER: Auto-create profile and starter habits on new user
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -176,6 +176,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+  -- 1. Create User Profile
   INSERT INTO public.profiles (id, display_name, avatar_url, timezone)
   VALUES (
     NEW.id,
@@ -184,6 +185,15 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'timezone', 'UTC')
   )
   ON CONFLICT (id) DO NOTHING;
+
+  -- 2. Seed Default Starter Habits
+  INSERT INTO public.habits (user_id, name, category, color_hex, icon_key, position)
+  VALUES
+    (NEW.id, 'Meditación', 'Bienestar', '#10B981', 'brain', 0),
+    (NEW.id, 'Ejercicio', 'Salud', '#EC4899', 'dumbbell', 1),
+    (NEW.id, 'Lectura', 'Enfoque', '#06B6D4', 'book-open', 2)
+  ON CONFLICT DO NOTHING;
+
   RETURN NEW;
 END;
 $$;
@@ -212,3 +222,11 @@ CREATE OR REPLACE TRIGGER profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.set_updated_at();
+
+-- ============================================================
+-- PERMISSIONS & GRANTS
+-- ============================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO authenticated;
