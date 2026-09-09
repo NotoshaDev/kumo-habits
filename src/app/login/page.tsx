@@ -3,50 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, Wand2, KeyRound, Loader2 } from 'lucide-react'
+import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, KeyRound, UserPlus, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'magic' | 'password'>('magic')
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-
-  const handleMagicLink = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-
-    retroAudio.playCheck()
-    setLoading(true)
-    setMessage(null)
-
-    const supabase = createClient()
-    const redirectTo = `${window.location.origin}/auth/callback`
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: redirectTo,
-      },
-    })
-
-    setLoading(false)
-
-    if (error) {
-      retroAudio.playUncheck()
-      setMessage({ type: 'error', text: error.message })
-    } else {
-      retroAudio.playAchievement()
-      setMessage({
-        type: 'success',
-        text: '¡Enlace Mágico enviado! Revisa tu bandeja de entrada para ingresar.',
-      })
-    }
-  }
 
   const handlePasswordAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +42,7 @@ export default function LoginPage() {
         retroAudio.playAchievement()
         setMessage({
           type: 'success',
-          text: '¡Cuenta creada! Si se requiere confirmación, revisa tu correo.',
+          text: '¡Cuenta creada con éxito! Si Supabase requiere confirmación, revisa tu correo.',
         })
       }
     } else {
@@ -160,11 +127,9 @@ export default function LoginPage() {
           </div>
 
           <p className="text-[11px] text-slate-400 mt-1">
-            Ingresa tus credenciales para sincronizar tu matriz de disciplina.
+            {isSignUp ? 'Crea tu cuenta para comenzar a sincronizar tus hábitos.' : 'Ingresa tus credenciales para sincronizar tu matriz de disciplina.'}
           </p>
         </div>
-
-
 
         {/* Feedback Message */}
         {message && (
@@ -186,148 +151,97 @@ export default function LoginPage() {
           </motion.div>
         )}
 
-        {/* Login Method Tabs */}
+        {/* Mode Selector Toggle */}
         <div className="grid grid-cols-2 p-1 bg-[#08090C] rounded-lg border border-[#1E2230] mb-5 text-xs font-semibold">
           <button
             type="button"
             onClick={() => {
               retroAudio.playCheck()
-              setActiveTab('magic')
+              setIsSignUp(false)
+              setMessage(null)
             }}
             className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
-              activeTab === 'magic'
+              !isSignUp
                 ? 'bg-[#1E2230] text-[#10B981] shadow-sm font-bold shadow-[0_0_8px_rgba(16,185,129,0.15)]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Wand2 className="w-3.5 h-3.5" />
-            <span>Enlace Mágico</span>
+            <KeyRound className="w-3.5 h-3.5" />
+            <span>Iniciar Sesión</span>
           </button>
           <button
             type="button"
             onClick={() => {
               retroAudio.playCheck()
-              setActiveTab('password')
+              setIsSignUp(true)
+              setMessage(null)
             }}
             className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
-              activeTab === 'password'
+              isSignUp
                 ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm font-bold shadow-[0_0_8px_rgba(56,189,248,0.15)]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <KeyRound className="w-3.5 h-3.5" />
-            <span>Contraseña</span>
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>Crear Cuenta</span>
           </button>
         </div>
 
-        {/* Tab 1: Magic Link Form */}
-        {activeTab === 'magic' && (
-          <form onSubmit={handleMagicLink} className="space-y-4">
-            <div>
-              <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
-                CORREO ELECTRÓNICO
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="cyberpunk@habitpixel.app"
-                  className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#10B981] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
-                />
-              </div>
+        {/* Main Password Form */}
+        <form onSubmit={handlePasswordAuth} className="space-y-4">
+          <div>
+            <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
+              CORREO ELECTRÓNICO
+            </label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#10B981] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
+              />
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>PROCESANDO...</span>
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-4 h-4" />
-                  <span>ENVIAR ENLACE MÁGICO</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* Tab 2: Password Form */}
-        {activeTab === 'password' && (
-          <form onSubmit={handlePasswordAuth} className="space-y-4">
-            <div>
-              <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
-                CORREO ELECTRÓNICO
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="cyberpunk@habitpixel.app"
-                  className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#38BDF8] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
-                />
-              </div>
+          <div>
+            <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
+              CONTRASEÑA
+            </label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#10B981] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
+              />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
-                CONTRASEÑA
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#38BDF8] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between text-xs pt-1">
-              <button
-                type="button"
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-[#38BDF8] hover:underline cursor-pointer"
-              >
-                {isSignUp ? '¿Ya tienes cuenta? Iniciar Sesión' : '¿Nuevo jugador? Registrarse'}
-              </button>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:from-[#7DD3FC] hover:to-[#38BDF8] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>VERIFICANDO...</span>
-                </>
-              ) : (
-                <>
-                  <KeyRound className="w-4 h-4" />
-                  <span>{isSignUp ? 'CREAR CUENTA CYBER' : 'INICIAR SESIÓN'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-        )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{isSignUp ? 'CREANDO CUENTA...' : 'VERIFICANDO...'}</span>
+              </>
+            ) : (
+              <>
+                {isSignUp ? <UserPlus className="w-4 h-4" /> : <KeyRound className="w-4 h-4" />}
+                <span>{isSignUp ? 'CREAR CUENTA CYBER' : 'INICIAR SESIÓN'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
+          </button>
+        </form>
 
         {/* Divider */}
         <div className="relative my-6">
@@ -342,17 +256,7 @@ export default function LoginPage() {
         </div>
 
         {/* OAuth Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <button
-            type="button"
-            onClick={() => handleOAuthLogin('github')}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[#141724] border border-[#23283B] hover:border-slate-500 hover:bg-[#1A1F30] text-slate-200 text-xs font-semibold transition-all cursor-pointer"
-          >
-            <svg className="w-4 h-4 fill-current text-slate-300" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-            <span>GitHub</span>
-          </button>
+        <div className="grid grid-cols-2 gap-3 mb-2">
           <button
             type="button"
             onClick={() => handleOAuthLogin('google')}
@@ -377,6 +281,16 @@ export default function LoginPage() {
               />
             </svg>
             <span>Google</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuthLogin('github')}
+            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[#141724] border border-[#23283B] hover:border-slate-500 hover:bg-[#1A1F30] text-slate-200 text-xs font-semibold transition-all cursor-pointer"
+          >
+            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            <span>GitHub</span>
           </button>
         </div>
       </motion.div>
