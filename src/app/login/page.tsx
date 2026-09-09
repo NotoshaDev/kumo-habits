@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Zap, ShieldAlert, CheckCircle2, Terminal, Play, Wand2, KeyRound, Loader2 } from 'lucide-react'
+import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, Wand2, KeyRound, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
@@ -16,8 +16,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const isMock = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref')
-
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
@@ -25,18 +23,6 @@ export default function LoginPage() {
     retroAudio.playCheck()
     setLoading(true)
     setMessage(null)
-
-    if (isMock) {
-      setTimeout(() => {
-        setMessage({
-          type: 'success',
-          text: 'Modo Demo Activo: Redirigiendo al Centro de Comando...',
-        })
-        setLoading(false)
-        setTimeout(() => router.push('/dashboard'), 1000)
-      }, 600)
-      return
-    }
 
     const supabase = createClient()
     const redirectTo = `${window.location.origin}/auth/callback`
@@ -69,18 +55,6 @@ export default function LoginPage() {
     retroAudio.playCheck()
     setLoading(true)
     setMessage(null)
-
-    if (isMock) {
-      setTimeout(() => {
-        setMessage({
-          type: 'success',
-          text: 'Modo Demo Activo: Autenticado como jugador de pruebas.',
-        })
-        setLoading(false)
-        setTimeout(() => router.push('/dashboard'), 1000)
-      }, 600)
-      return
-    }
 
     const supabase = createClient()
 
@@ -123,15 +97,6 @@ export default function LoginPage() {
 
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
     retroAudio.playCheck()
-    if (isMock) {
-      setMessage({
-        type: 'success',
-        text: `Modo Demo: Simulando inicio de sesión con ${provider.toUpperCase()}...`,
-      })
-      setTimeout(() => router.push('/dashboard'), 800)
-      return
-    }
-
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider,
@@ -139,11 +104,6 @@ export default function LoginPage() {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
-  }
-
-  const handleBypassDemo = () => {
-    retroAudio.playCheck()
-    router.push('/dashboard')
   }
 
   return (
@@ -204,15 +164,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* System Mode Notice */}
-        {isMock && (
-          <div className="mb-5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
-            <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold">Modo Demo Local:</span> Supabase no está enlazado todavía. Puedes probar el acceso rápido o ingresar en modo invitado.
-            </div>
-          </div>
-        )}
+
 
         {/* Feedback Message */}
         {message && (
@@ -427,16 +379,6 @@ export default function LoginPage() {
             <span>Google</span>
           </button>
         </div>
-
-        {/* Demo Mode Action */}
-        <button
-          type="button"
-          onClick={handleBypassDemo}
-          className="w-full py-2.5 px-4 rounded-lg bg-[#141724]/60 border border-[#23283B] hover:border-[#10B981]/50 hover:bg-[#10B981]/10 text-slate-300 hover:text-[#10B981] transition-all flex items-center justify-center gap-2 text-xs font-bold cursor-pointer group"
-        >
-          <Play className="w-3.5 h-3.5 fill-current group-hover:translate-x-0.5 transition-transform" />
-          <span>CONTINUAR EN MODO DEMO (OFFLINE)</span>
-        </button>
       </motion.div>
     </div>
   )

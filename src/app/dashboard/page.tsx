@@ -1,56 +1,70 @@
 import type { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
 import { HabitDashboard } from '@/components/HabitDashboard'
+import type { MonthlyGoalRow } from '@/types/database'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Tu centro de comando de hábitos mensual',
 }
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Dashboard page — Server Component shell.
  * Renders the client-side HabitDashboard with initial date seeded from server.
  * Data fetching (habits + logs) happens client-side via TanStack Query.
  */
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+
+  let userXP = 0
+  let userLevel = 1
+  let goals: MonthlyGoalRow[] = []
+
+  try {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (user) {
+      // Fetch profile for XP and level
+      const { data: profile } = await (supabase as any)
+        .from('profiles')
+        .select('level, xp')
+        .eq('id', user.id)
+        .single()
+
+      if (profile) {
+        userLevel = profile.level ?? 1
+        userXP = Number(profile.xp ?? 0)
+      }
+
+      // Fetch monthly goals
+      const { data: userGoals } = await (supabase as any)
+        .from('monthly_goals')
+        .select('*')
+        .eq('year', year)
+        .eq('month', month)
+
+      if (userGoals) {
+        goals = userGoals as MonthlyGoalRow[]
+      }
+    }
+  } catch (err) {
+    console.error('Error loading dashboard session:', err)
+  }
 
   return (
     <HabitDashboard
-      initialYear={now.getFullYear()}
-      initialMonth={now.getMonth() + 1}
-      // TODO: pass real userXP / userLevel from Supabase session
-      userXP={340}
-      userLevel={4}
-      goals={[
-        // TODO: fetch from Supabase server client
-        {
-          id: 'goal-1',
-          user_id: 'mock',
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
-          title: 'Completar 25 días de ejercicio',
-          completed: false,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 'goal-2',
-          user_id: 'mock',
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
-          title: 'Leer 2 libros',
-          completed: true,
-          created_at: new Date().toISOString(),
-        },
-        {
-          id: 'goal-3',
-          user_id: 'mock',
-          year: now.getFullYear(),
-          month: now.getMonth() + 1,
-          title: 'Meditar todos los días',
-          completed: false,
-          created_at: new Date().toISOString(),
-        },
-      ]}
+      initialYear={year}
+      initialMonth={month}
+      userXP={userXP}
+      userLevel={userLevel}
+      goals={goals}
     />
   )
 }

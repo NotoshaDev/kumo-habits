@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type { HabitRow, HabitLogRow } from '@/types/database'
-import { getTodayString, toISODateString } from '@/lib/date-utils'
+import { toISODateString } from '@/lib/date-utils'
 
 // ---- Query Keys -----------------------------------------------
 
@@ -13,110 +13,7 @@ export const habitKeys = {
   logs: (year: number, month: number) => ['habit_logs', year, month] as const,
 }
 
-// ---- Mock Data (DEV ONLY — replace with real Supabase calls) --
-// When NEXT_PUBLIC_SUPABASE_URL is not set, we use mock data so the
-// UI can be developed without a live Supabase project.
-
-const MOCK_USER_ID = 'mock-user-00000000-0000-0000-0000-000000000000'
-
-const MOCK_HABITS: HabitRow[] = [
-  {
-    id: 'habit-1',
-    user_id: MOCK_USER_ID,
-    name: 'Meditación',
-    category: 'Bienestar',
-    color_hex: '#10B981',
-    icon_key: 'brain',
-    position: 0,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'habit-2',
-    user_id: MOCK_USER_ID,
-    name: 'Ejercicio',
-    category: 'Salud',
-    color_hex: '#EC4899',
-    icon_key: 'dumbbell',
-    position: 1,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'habit-3',
-    user_id: MOCK_USER_ID,
-    name: 'Lectura',
-    category: 'Enfoque',
-    color_hex: '#06B6D4',
-    icon_key: 'book-open',
-    position: 2,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'habit-4',
-    user_id: MOCK_USER_ID,
-    name: 'Programar',
-    category: 'Enfoque',
-    color_hex: '#A78BFA',
-    icon_key: 'code',
-    position: 3,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'habit-5',
-    user_id: MOCK_USER_ID,
-    name: 'Agua (2L)',
-    category: 'Salud',
-    color_hex: '#38BDF8',
-    icon_key: 'droplets',
-    position: 4,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: 'habit-6',
-    user_id: MOCK_USER_ID,
-    name: 'Diario',
-    category: 'Bienestar',
-    color_hex: '#F59E0B',
-    icon_key: 'pen-line',
-    position: 5,
-    is_archived: false,
-    created_at: new Date().toISOString(),
-  },
-]
-
-function generateMockLogs(year: number, month: number): HabitLogRow[] {
-  const logs: HabitLogRow[] = []
-  const today = getTodayString()
-  const daysInMonth = new Date(year, month, 0).getDate()
-
-  MOCK_HABITS.forEach((habit, hi) => {
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = toISODateString(year, month, day)
-      if (dateStr > today) continue
-      // Deterministic pseudo-random completion (varied per habit)
-      const seed = (hi * 31 + day) % 7
-      if (seed < 5) {
-        logs.push({
-          id: `log-${habit.id}-${dateStr}`,
-          habit_id: habit.id,
-          user_id: MOCK_USER_ID,
-          date: dateStr,
-          completed: true,
-          created_at: new Date().toISOString(),
-        })
-      }
-    }
-  })
-  return logs
-}
-
-const isMock = !process.env.NEXT_PUBLIC_SUPABASE_URL
-
-// ---- Hooks ---------------------------------------------------
+// ---- Hooks: Fetch Active Habits ------------------------------
 
 /**
  * Fetches active (non-archived) habits for the current user.
@@ -125,8 +22,6 @@ export function useHabits() {
   return useQuery({
     queryKey: habitKeys.active(),
     queryFn: async (): Promise<HabitRow[]> => {
-      if (isMock) return MOCK_HABITS
-
       const supabase = createClient()
       const { data, error } = await supabase
         .from('habits')
@@ -135,10 +30,12 @@ export function useHabits() {
         .order('position', { ascending: true })
 
       if (error) throw error
-      return data
+      return data ?? []
     },
   })
 }
+
+// ---- Hooks: Fetch Month Logs ---------------------------------
 
 /**
  * Fetches all habit logs for a given year/month.
@@ -150,8 +47,6 @@ export function useHabitLogs(year: number, month: number) {
   return useQuery({
     queryKey: habitKeys.logs(year, month),
     queryFn: async (): Promise<HabitLogRow[]> => {
-      if (isMock) return generateMockLogs(year, month)
-
       const supabase = createClient()
       const { data, error } = await supabase
         .from('habit_logs')
@@ -160,12 +55,12 @@ export function useHabitLogs(year: number, month: number) {
         .lte('date', endDate)
 
       if (error) throw error
-      return data
+      return data ?? []
     },
   })
 }
 
-// ---- Toggle Mutation (Optimistic) ----------------------------
+// ---- Toggle Mutation (Optimistic 0ms UI) ---------------------
 
 interface ToggleLogArgs {
   habitId: string
@@ -183,25 +78,20 @@ export function useToggleHabitLog(year: number, month: number) {
 
   return useMutation({
     mutationFn: async ({ habitId, date, currentlyCompleted }: ToggleLogArgs) => {
-      if (isMock) {
-        // Simulate network delay in mock mode
-        await new Promise((r) => setTimeout(r, 100))
-        return
-      }
-
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any
 
       if (!currentlyCompleted) {
-        const userId = (await supabase.auth.getUser()).data.user?.id ?? ''
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) throw new Error('Usuario no autenticado')
+
         const { error } = await db.from('habit_logs').upsert(
-          { habit_id: habitId, user_id: userId, date, completed: true },
+          { habit_id: habitId, user_id: user.id, date, completed: true },
           { onConflict: 'habit_id,date' },
         )
         if (error) throw error
       } else {
-        // Mark incomplete: delete the log row
         const { error } = await db
           .from('habit_logs')
           .delete()
@@ -213,19 +103,14 @@ export function useToggleHabitLog(year: number, month: number) {
 
     // ---- Optimistic update -----------------------------------
     onMutate: async ({ habitId, date, currentlyCompleted }) => {
-      // Cancel any in-flight refetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey: logsKey })
-
-      // Snapshot previous state for rollback
       const previousLogs = queryClient.getQueryData<HabitLogRow[]>(logsKey)
 
       queryClient.setQueryData<HabitLogRow[]>(logsKey, (old: HabitLogRow[] | undefined) => {
         const prev = old ?? []
         if (currentlyCompleted) {
-          // Remove the log
           return prev.filter((l) => !(l.habit_id === habitId && l.date === date))
         } else {
-          // Add or update the log optimistically
           const exists = prev.find((l) => l.habit_id === habitId && l.date === date)
           if (exists) {
             return prev.map((l) =>
@@ -235,7 +120,7 @@ export function useToggleHabitLog(year: number, month: number) {
           const optimisticLog: HabitLogRow = {
             id: `optimistic-${habitId}-${date}`,
             habit_id: habitId,
-            user_id: MOCK_USER_ID,
+            user_id: '',
             date,
             completed: true,
             created_at: new Date().toISOString(),
@@ -247,18 +132,14 @@ export function useToggleHabitLog(year: number, month: number) {
       return { previousLogs }
     },
 
-    // ---- Rollback on error -----------------------------------
     onError: (_err, _vars, context) => {
       if (context?.previousLogs !== undefined) {
         queryClient.setQueryData(logsKey, context.previousLogs)
       }
     },
 
-    // ---- Always refetch after settle (only in real mode) ----
     onSettled: () => {
-      if (!isMock) {
-        queryClient.invalidateQueries({ queryKey: logsKey })
-      }
+      queryClient.invalidateQueries({ queryKey: logsKey })
     },
   })
 }
@@ -277,23 +158,6 @@ export function useCreateHabit() {
 
   return useMutation({
     mutationFn: async (args: CreateHabitArgs): Promise<HabitRow> => {
-      if (isMock) {
-        await new Promise((r) => setTimeout(r, 150))
-        const newHabit: HabitRow = {
-          id: `habit-${Date.now()}`,
-          user_id: MOCK_USER_ID,
-          name: args.name,
-          category: args.category || 'General',
-          color_hex: args.color_hex,
-          icon_key: args.icon_key,
-          position: MOCK_HABITS.length,
-          is_archived: false,
-          created_at: new Date().toISOString(),
-        }
-        MOCK_HABITS.push(newHabit)
-        return newHabit
-      }
-
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any
@@ -301,12 +165,13 @@ export function useCreateHabit() {
       const habits = queryClient.getQueryData<HabitRow[]>(habitKeys.active()) ?? []
       const nextPosition = habits.length
 
-      const userId = (await supabase.auth.getUser()).data.user?.id ?? ''
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Usuario no autenticado')
 
       const { data, error } = await db
         .from('habits')
         .insert({
-          user_id: userId,
+          user_id: user.id,
           name: args.name,
           category: args.category || 'General',
           color_hex: args.color_hex,
@@ -327,9 +192,7 @@ export function useCreateHabit() {
         if (prev.some((h) => h.id === newHabit.id)) return prev
         return [...prev, newHabit]
       })
-      if (!isMock) {
-        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
-      }
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
     },
   })
 }
@@ -341,13 +204,6 @@ export function useDeleteHabit() {
 
   return useMutation({
     mutationFn: async (habitId: string) => {
-      if (isMock) {
-        await new Promise((r) => setTimeout(r, 100))
-        const idx = MOCK_HABITS.findIndex((h) => h.id === habitId)
-        if (idx !== -1) MOCK_HABITS.splice(idx, 1)
-        return habitId
-      }
-
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any
@@ -361,9 +217,7 @@ export function useDeleteHabit() {
       queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
         return (old ?? []).filter((h) => h.id !== deletedId)
       })
-      if (!isMock) {
-        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
-      }
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
     },
   })
 }
@@ -383,22 +237,6 @@ export function useUpdateHabit() {
 
   return useMutation({
     mutationFn: async (args: UpdateHabitArgs): Promise<HabitRow> => {
-      if (isMock) {
-        await new Promise((r) => setTimeout(r, 150))
-        const idx = MOCK_HABITS.findIndex((h) => h.id === args.id)
-        if (idx !== -1) {
-          MOCK_HABITS[idx] = {
-            ...MOCK_HABITS[idx],
-            name: args.name,
-            category: args.category || 'General',
-            color_hex: args.color_hex,
-            icon_key: args.icon_key,
-          }
-          return MOCK_HABITS[idx]
-        }
-        throw new Error('Habit not found')
-      }
-
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any
@@ -423,9 +261,7 @@ export function useUpdateHabit() {
       queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
         return (old ?? []).map((h) => (h.id === updatedHabit.id ? updatedHabit : h))
       })
-      if (!isMock) {
-        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
-      }
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
     },
   })
 }
@@ -437,15 +273,6 @@ export function useArchiveHabit() {
 
   return useMutation({
     mutationFn: async (habitId: string) => {
-      if (isMock) {
-        await new Promise((r) => setTimeout(r, 100))
-        const idx = MOCK_HABITS.findIndex((h) => h.id === habitId)
-        if (idx !== -1) {
-          MOCK_HABITS[idx].is_archived = true
-        }
-        return habitId
-      }
-
       const supabase = createClient()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any
@@ -459,11 +286,7 @@ export function useArchiveHabit() {
       queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
         return (old ?? []).filter((h) => h.id !== archivedId)
       })
-      if (!isMock) {
-        queryClient.invalidateQueries({ queryKey: habitKeys.active() })
-      }
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
     },
   })
 }
-
-

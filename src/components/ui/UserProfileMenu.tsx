@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, LogOut, LogIn, Shield, Wifi, WifiOff, Sparkles, ChevronDown } from 'lucide-react'
+import { LogOut, LogIn, Wifi, ChevronDown } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -20,14 +20,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const isMock = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project-ref')
-
   useEffect(() => {
-    if (isMock) {
-      setLoading(false)
-      return
-    }
-
     const supabase = createClient()
 
     // Fetch initial user session
@@ -44,7 +37,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
     })
 
     return () => subscription.unsubscribe()
-  }, [isMock])
+  }, [])
 
   // Close menu on outside click
   useEffect(() => {
@@ -64,10 +57,8 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
 
   const handleLogout = async () => {
     retroAudio.playUncheck()
-    if (!isMock) {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-    }
+    const supabase = createClient()
+    await supabase.auth.signOut()
     setIsOpen(false)
     router.push('/login')
   }
@@ -78,8 +69,8 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
     router.push('/login')
   }
 
-  const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'G'
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Gamer Pixel'
+  const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'K'
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Jugador Kumo'
 
   return (
     <div className="relative inline-block text-left" ref={menuRef}>
@@ -93,7 +84,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
         <div className="relative flex items-center justify-center">
           <span
             className={`w-2 h-2 rounded-full ${
-              !isMock && user ? 'bg-emerald-400 shadow-[0_0_8px_#10B981]' : 'bg-amber-400 shadow-[0_0_8px_#F59E0B]'
+              user ? 'bg-emerald-400 shadow-[0_0_8px_#10B981]' : 'bg-slate-500'
             }`}
           />
         </div>
@@ -105,7 +96,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
 
         {/* Display Label */}
         <span className="hidden sm:inline font-semibold tracking-wider text-slate-300">
-          {loading ? 'CARGANDO...' : !isMock && user ? displayName : 'MODO DEMO'}
+          {loading ? 'CARGANDO...' : user ? displayName : 'INVITADO'}
         </span>
 
         <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -129,7 +120,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-slate-100 truncate text-xs">{displayName}</p>
-                <p className="text-[10px] text-slate-400 truncate">{user?.email || 'Jugador Invitado (Demo)'}</p>
+                <p className="text-[10px] text-slate-400 truncate">{user?.email || 'No autenticado'}</p>
               </div>
             </div>
 
@@ -148,25 +139,16 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
             {/* Connection Status */}
             <div className="mb-3 p-2 rounded-lg bg-[#10131F] border border-[#1E2230] flex items-center justify-between text-[11px]">
               <span className="text-slate-400 flex items-center gap-1.5">
-                {!isMock && user ? (
-                  <>
-                    <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Supabase Sync:</span>
-                  </>
-                ) : (
-                  <>
-                    <WifiOff className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Estado:</span>
-                  </>
-                )}
+                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Supabase Sync:</span>
               </span>
-              <span className={`font-bold ${!isMock && user ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {!isMock && user ? 'ACTIVO' : 'MODO DEMO'}
+              <span className="font-bold text-emerald-400">
+                {user ? 'EN LÍNEA' : 'DESCONECTADO'}
               </span>
             </div>
 
             {/* Actions */}
-            {!isMock && user ? (
+            {user ? (
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-rose-950/40 border border-rose-800/50 hover:bg-rose-900/60 text-rose-300 font-bold transition-all cursor-pointer text-xs group"
@@ -180,7 +162,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-bold shadow-[0_0_12px_rgba(16,185,129,0.3)] transition-all cursor-pointer text-xs group"
               >
                 <LogIn className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                <span>CONECTAR CUENTA / LOGIN</span>
+                <span>INICIAR SESIÓN</span>
               </button>
             )}
           </motion.div>
