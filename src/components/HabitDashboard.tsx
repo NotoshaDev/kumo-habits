@@ -10,6 +10,7 @@ import { DesktopSidePanel } from '@/components/desktop/DesktopSidePanel'
 import { MobileTrackerView } from '@/components/mobile/MobileTrackerView'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { AchievementsModal } from '@/components/ui/AchievementsModal'
+import { UserProfileMenu } from '@/components/ui/UserProfileMenu'
 import { retroAudio } from '@/lib/sound-effects'
 import { formatMonthLabel, getPrevMonth, getNextMonth } from '@/lib/date-utils'
 import { cn } from '@/lib/utils'
@@ -85,6 +86,7 @@ function DesktopHeader({
   habits,
   logs,
   userXP,
+  userLevel,
 }: {
   year: number
   month: number
@@ -95,9 +97,10 @@ function DesktopHeader({
   habits: HabitRow[]
   logs: HabitLogRow[]
   userXP: number
+  userLevel: number
 }) {
   return (
-    <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#1E2230] bg-[#10121A]/50 backdrop-blur-md shrink-0">
+    <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#1E2230] bg-[#10121A]/50 backdrop-blur-md shrink-0 relative z-[5000]">
       {/* Brand (Left) */}
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#10B981]/15 border border-[#10B981]/30">
@@ -159,6 +162,9 @@ function DesktopHeader({
             </button>
           }
         />
+
+        {/* User Profile Menu */}
+        <UserProfileMenu level={userLevel} xp={userXP} />
       </div>
     </header>
   )
@@ -176,6 +182,7 @@ function MobileHeader({
   habits,
   logs,
   userXP,
+  userLevel,
 }: {
   year: number
   month: number
@@ -186,9 +193,10 @@ function MobileHeader({
   habits: HabitRow[]
   logs: HabitLogRow[]
   userXP: number
+  userLevel: number
 }) {
   return (
-    <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-[#1E2230] bg-[#10121A]/80 backdrop-blur-md">
+    <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-[#1E2230] bg-[#10121A]/80 backdrop-blur-md relative z-[5000]">
       <div className="flex items-center gap-2">
         <Zap size={14} className="text-[#10B981]" style={{ filter: 'drop-shadow(0 0 4px #10B981)' }} />
         <h1 className="font-mono text-sm font-bold text-[#F1F5F9]">HabitPixel</h1>
@@ -234,6 +242,8 @@ function MobileHeader({
             </button>
           }
         />
+
+        <UserProfileMenu level={userLevel} xp={userXP} />
       </div>
     </header>
   )
@@ -330,6 +340,7 @@ export function HabitDashboard({
           habits={habits}
           logs={logs}
           userXP={userXP}
+          userLevel={userLevel}
         />
         {isLoading ? (
           <LoadingSkeleton />
@@ -359,6 +370,7 @@ export function HabitDashboard({
         habits={habits}
         logs={logs}
         userXP={userXP}
+        userLevel={userLevel}
       />
 
       <div className="flex flex-1 gap-0 overflow-hidden">
