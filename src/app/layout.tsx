@@ -21,24 +21,33 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: 'HabitPixel — Habit Tracker Gamificado',
-    template: '%s | HabitPixel',
+    default: 'Kumo Habits — Habit Tracker Gamificado',
+    template: '%s | Kumo Habits',
   },
   description:
-    'Rastrea tus hábitos diarios con una experiencia gamificada retro arcade. Visualiza tu progreso mensual, gana XP y mantén tus rachas.',
-  keywords: ['habit tracker', 'gamificación', 'productividad', 'hábitos', 'PWA'],
+    'Rastrea tus hábitos diarios con una experiencia gamificada retro arcade. Visualiza tu progreso mensual, gana XP y mantén tus rachas. by NotoshaDev.',
+  keywords: ['habit tracker', 'gamificación', 'productividad', 'hábitos', 'PWA', 'kumo habits'],
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'HabitPixel',
+    title: 'Kumo Habits',
   },
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    title: 'HabitPixel — Habit Tracker Gamificado',
-    description: 'Rastrea tus hábitos con estética retro arcade/cyberpunk.',
-    siteName: 'HabitPixel',
+    title: 'Kumo Habits — Habit Tracker Gamificado',
+    description: 'Rastrea tus hábitos con estética retro arcade/cyberpunk. by NotoshaDev.',
+    siteName: 'Kumo Habits',
   },
 }
 
@@ -47,6 +56,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 }
 
 // ---- Root Layout --------------------------------------------

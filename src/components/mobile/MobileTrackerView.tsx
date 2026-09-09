@@ -28,6 +28,8 @@ interface MobileTrackerViewProps {
   logs: HabitLogRow[]
   year: number
   month: number
+  onPrevMonth?: () => void
+  onNextMonth?: () => void
   onToggle: (habitId: string, date: string, currentlyCompleted: boolean) => void
 }
 
@@ -182,9 +184,13 @@ export function MobileTrackerView({
   logs,
   year,
   month,
+  onPrevMonth,
+  onNextMonth,
   onToggle,
 }: MobileTrackerViewProps) {
   const today = getTodayString()
+  const now = new Date()
+  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1
   const weeks = useMemo(() => getWeeksOfMonth(year, month), [year, month])
 
   // Find the week containing today, fallback to 0
@@ -219,15 +225,41 @@ export function MobileTrackerView({
 
   return (
     <div className="flex flex-col h-full bg-[#08090C]">
-      {/* Top bar — month + stats */}
-      <div className="px-4 pt-4 pb-2 border-b border-[#1E2230]">
+      {/* Top bar — month navigator + stats */}
+      <div className="px-4 pt-3 pb-2 border-b border-[#1E2230]">
         <div className="flex items-center justify-between">
-          <h2 className="font-mono text-sm text-[#94A3B8] uppercase tracking-widest">
-            {formatMonthLabel(year, month)}
-          </h2>
+          <div className="flex items-center gap-2">
+            {onPrevMonth && (
+              <button
+                onClick={onPrevMonth}
+                className="flex items-center justify-center w-7 h-7 rounded-md border border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] active:bg-[#1E2230] transition-colors"
+                aria-label="Mes anterior"
+              >
+                <ChevronLeft size={14} />
+              </button>
+            )}
+            <h2 className="font-mono text-xs font-bold text-[#F1F5F9] uppercase tracking-wider">
+              {formatMonthLabel(year, month)}
+            </h2>
+            {onNextMonth && (
+              <button
+                onClick={onNextMonth}
+                disabled={isCurrentMonth}
+                className={cn(
+                  'flex items-center justify-center w-7 h-7 rounded-md border transition-colors',
+                  isCurrentMonth
+                    ? 'border-[#1E2230]/40 text-[#1E2230] cursor-not-allowed'
+                    : 'border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] active:bg-[#1E2230]',
+                )}
+                aria-label="Mes siguiente"
+              >
+                <ChevronRight size={14} />
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-mono text-xs text-[#64748B]">Hoy:</span>
-            <span className="font-mono text-sm font-bold text-[#10B981]">
+            <span className="font-mono text-[10px] text-[#64748B]">HOY:</span>
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981]">
               {completedToday}/{habits.length}
             </span>
           </div>

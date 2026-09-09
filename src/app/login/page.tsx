@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, Sparkles, ArrowRight, Zap, ShieldAlert, CheckCircle2, Gamepad2, Play } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Zap, ShieldAlert, CheckCircle2, Terminal, Play, Wand2, KeyRound, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
@@ -162,14 +162,44 @@ export default function LoginPage() {
       >
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] text-xs font-bold mb-3 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-            <Gamepad2 className="w-3.5 h-3.5" />
+          {/* Logo lockup */}
+          <div className="flex items-center justify-center gap-2.5 mb-3">
+            {/* Pixel cloud icon — the "Kumo" (雲) */}
+            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_16px_rgba(16,185,129,0.25)]">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
+                  fill="url(#cloud-grad)"
+                  opacity="0.9"
+                />
+                <defs>
+                  <linearGradient id="cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#10B981" />
+                    <stop offset="100%" stopColor="#38BDF8" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
+            {/* Wordmark */}
+            <div className="text-left">
+              <h1 className="text-xl sm:text-2xl font-extrabold leading-none tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#34D399] to-[#38BDF8]">Kumo</span>
+                <span className="text-slate-100"> Habits</span>
+              </h1>
+              <p className="text-[9px] text-slate-500 font-mono tracking-[0.2em] leading-none mt-0.5 uppercase">
+                by NotoshaDev
+              </p>
+            </div>
+          </div>
+
+          {/* System badge */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10B981]/8 border border-[#10B981]/20 text-[#10B981]/80 text-[10px] font-mono mb-2 tracking-widest">
+            <Terminal className="w-2.5 h-2.5" />
             <span>ACCESO AL SISTEMA // v1.0</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#38BDF8] to-[#A78BFA] tracking-tight">
-            HABITPIXEL
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
+
+          <p className="text-[11px] text-slate-400 mt-1">
             Ingresa tus credenciales para sincronizar tu matriz de disciplina.
           </p>
         </div>
@@ -212,13 +242,14 @@ export default function LoginPage() {
               retroAudio.playCheck()
               setActiveTab('magic')
             }}
-            className={`py-2 rounded-md transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
               activeTab === 'magic'
-                ? 'bg-[#1E2230] text-[#10B981] shadow-sm font-bold'
+                ? 'bg-[#1E2230] text-[#10B981] shadow-sm font-bold shadow-[0_0_8px_rgba(16,185,129,0.15)]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Enlace Mágico ✨
+            <Wand2 className="w-3.5 h-3.5" />
+            <span>Enlace Mágico</span>
           </button>
           <button
             type="button"
@@ -226,13 +257,14 @@ export default function LoginPage() {
               retroAudio.playCheck()
               setActiveTab('password')
             }}
-            className={`py-2 rounded-md transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
               activeTab === 'password'
-                ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm font-bold'
+                ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm font-bold shadow-[0_0_8px_rgba(56,189,248,0.15)]'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            Contraseña 🔑
+            <KeyRound className="w-3.5 h-3.5" />
+            <span>Contraseña</span>
           </button>
         </div>
 
@@ -262,9 +294,13 @@ export default function LoginPage() {
               className="w-full bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
             >
               {loading ? (
-                <span>PROCESANDO...</span>
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>PROCESANDO...</span>
+                </>
               ) : (
                 <>
+                  <Wand2 className="w-4 h-4" />
                   <span>ENVIAR ENLACE MÁGICO</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
@@ -326,9 +362,13 @@ export default function LoginPage() {
               className="w-full bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:from-[#7DD3FC] hover:to-[#38BDF8] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(56,189,248,0.3)] hover:shadow-[0_0_20px_rgba(56,189,248,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
             >
               {loading ? (
-                <span>VERIFICANDO...</span>
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>VERIFICANDO...</span>
+                </>
               ) : (
                 <>
+                  <KeyRound className="w-4 h-4" />
                   <span>{isSignUp ? 'CREAR CUENTA CYBER' : 'INICIAR SESIÓN'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>

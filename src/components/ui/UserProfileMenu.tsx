@@ -86,7 +86,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
       {/* Trigger Button */}
       <button
         onClick={handleToggleMenu}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#10121A] border border-[#1E2230] hover:border-[#3B82F6]/50 hover:bg-[#161926] transition-all text-xs font-mono text-slate-200 cursor-pointer shadow-sm group whitespace-nowrap"
+        className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-[#10121A] border border-[#1E2230] hover:border-[#3B82F6]/50 hover:bg-[#161926] transition-all text-xs font-mono text-slate-200 cursor-pointer shadow-sm group whitespace-nowrap"
         aria-label="Menú de perfil"
       >
         {/* Status Dot */}
@@ -119,7 +119,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-64 rounded-xl border border-[#262B3D] shadow-[0_20px_60px_rgba(0,0,0,0.98)] p-4 z-[5001] text-xs font-mono"
+            className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-24px)] rounded-xl border border-[#262B3D] shadow-[0_20px_60px_rgba(0,0,0,0.98)] p-4 z-[5001] text-xs font-mono"
             style={{ backgroundColor: '#0D0F17' }}
           >
             {/* Header info */}

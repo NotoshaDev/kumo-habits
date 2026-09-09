@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Zap, Plus, Volume2, VolumeX, Trophy } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useHabits, useHabitLogs, useToggleHabitLog } from '@/hooks/useHabits'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
@@ -102,16 +102,29 @@ function DesktopHeader({
   return (
     <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#1E2230] bg-[#10121A]/50 backdrop-blur-md shrink-0 relative z-[5000]">
       {/* Brand (Left) */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#10B981]/15 border border-[#10B981]/30">
-          <Zap size={16} className="text-[#10B981]" style={{ filter: 'drop-shadow(0 0 4px #10B981)' }} />
+      <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
+              fill="url(#dash-cloud-grad)"
+              opacity="0.95"
+            />
+            <defs>
+              <linearGradient id="dash-cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#10B981" />
+                <stop offset="100%" stopColor="#38BDF8" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
         <div>
-          <h1 className="font-mono text-base font-bold text-[#F1F5F9] tracking-tight leading-none">
-            HabitPixel
+          <h1 className="font-mono text-sm font-bold leading-none tracking-tight">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#38BDF8]">Kumo</span>
+            <span className="text-[#F1F5F9]"> Habits</span>
           </h1>
-          <p className="font-mono text-[10px] text-[#64748B] leading-none mt-0.5">
-            Centro de Comando
+          <p className="font-mono text-[9px] text-[#64748B] leading-none mt-0.5 tracking-[0.15em] uppercase">
+            by NotoshaDev
           </p>
         </div>
       </div>
@@ -173,10 +186,6 @@ function DesktopHeader({
 // ---- Mobile Header ------------------------------------------
 
 function MobileHeader({
-  year,
-  month,
-  onPrev,
-  onNext,
   isMuted,
   onToggleSound,
   habits,
@@ -184,10 +193,6 @@ function MobileHeader({
   userXP,
   userLevel,
 }: {
-  year: number
-  month: number
-  onPrev: () => void
-  onNext: () => void
   isMuted: boolean
   onToggleSound: () => void
   habits: HabitRow[]
@@ -196,12 +201,34 @@ function MobileHeader({
   userLevel: number
 }) {
   return (
-    <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-[#1E2230] bg-[#10121A]/80 backdrop-blur-md relative z-[5000]">
+    <header className="flex items-center justify-between px-4 py-2.5 border-b border-[#1E2230] bg-[#10121A]/90 backdrop-blur-md relative z-[5000]">
+      {/* Brand */}
       <div className="flex items-center gap-2">
-        <Zap size={14} className="text-[#10B981]" style={{ filter: 'drop-shadow(0 0 4px #10B981)' }} />
-        <h1 className="font-mono text-sm font-bold text-[#F1F5F9]">HabitPixel</h1>
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
+              fill="url(#mob-cloud-grad)"
+              opacity="0.95"
+            />
+            <defs>
+              <linearGradient id="mob-cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#10B981" />
+                <stop offset="100%" stopColor="#38BDF8" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div className="leading-tight">
+          <h1 className="font-mono text-sm font-bold leading-none">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#38BDF8]">Kumo</span>
+            <span className="text-[#F1F5F9]"> Habits</span>
+          </h1>
+          <p className="font-mono text-[8px] text-[#64748B] tracking-wider uppercase leading-none mt-0.5">by NotoshaDev</p>
+        </div>
       </div>
 
+      {/* Actions */}
       <div className="flex items-center gap-2">
         <button
           onClick={onToggleSound}
@@ -230,15 +257,13 @@ function MobileHeader({
           }
         />
 
-        <MonthNavigator year={year} month={month} onPrev={onPrev} onNext={onNext} />
-
         <AddHabitModal
           trigger={
             <button
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#10B981] text-black hover:bg-[#059669] transition-all duration-150 active:scale-95 shadow-sm shadow-emerald-500/20"
+              className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#10B981] text-black hover:bg-[#059669] transition-all duration-150 active:scale-95 shadow-sm shadow-emerald-500/20"
               aria-label="Agregar Hábito"
             >
-              <Plus size={16} className="stroke-[3]" />
+              <Plus size={15} className="stroke-[3]" />
             </button>
           }
         />
@@ -331,10 +356,6 @@ export function HabitDashboard({
     return (
       <div className="flex flex-col h-dvh bg-[#08090C] text-[#F1F5F9]">
         <MobileHeader
-          year={year}
-          month={month}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
           isMuted={isMuted}
           onToggleSound={handleToggleSound}
           habits={habits}
@@ -350,6 +371,8 @@ export function HabitDashboard({
             logs={logs}
             year={year}
             month={month}
+            onPrevMonth={handlePrevMonth}
+            onNextMonth={handleNextMonth}
             onToggle={handleToggle}
           />
         )}
