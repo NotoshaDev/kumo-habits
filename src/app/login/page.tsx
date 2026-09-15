@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, KeyRound, UserPlus, Loader2 } from 'lucide-react'
+import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, KeyRound, UserPlus, Loader2, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
@@ -62,14 +62,11 @@ export default function LoginPage() {
     }
   }
 
-  const handleOAuthLogin = async (provider: 'google' | 'github') => {
-    retroAudio.playCheck()
-    const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+  const handleSocialComingSoon = () => {
+    retroAudio.playUncheck()
+    setMessage({
+      type: 'error',
+      text: '⚡ Acceso con Google y redes sociales en desarrollo. Por favor ingresa con correo y contraseña.',
     })
   }
 
@@ -249,49 +246,51 @@ export default function LoginPage() {
             <div className="w-full border-t border-[#1E2230]" />
           </div>
           <div className="relative flex justify-center text-[10px] uppercase">
-            <span className="bg-[#10121A] px-3 text-slate-400 font-semibold tracking-widest">
-              O ACCEDE CON SOCIAL
+            <span className="bg-[#10121A] px-3 text-slate-500 font-semibold tracking-widest">
+              ACCESO SOCIAL
             </span>
           </div>
         </div>
 
-        {/* OAuth Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-2">
-          <button
-            type="button"
-            onClick={() => handleOAuthLogin('google')}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[#141724] border border-[#23283B] hover:border-slate-500 hover:bg-[#1A1F30] text-slate-200 text-xs font-semibold transition-all cursor-pointer"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
-              <path
-                fill="#EA4335"
-                d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"
-              />
-              <path
-                fill="#4285F4"
-                d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 14.5s.7 4.8 1.9 7.2l3.7-2.9z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"
-              />
-            </svg>
-            <span>Google</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => handleOAuthLogin('github')}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[#141724] border border-[#23283B] hover:border-slate-500 hover:bg-[#1A1F30] text-slate-200 text-xs font-semibold transition-all cursor-pointer"
-          >
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-            <span>GitHub</span>
-          </button>
+        {/* Coming Soon Social Card */}
+        <div
+          onClick={handleSocialComingSoon}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && handleSocialComingSoon()}
+          className="group relative rounded-xl border border-dashed border-[#1E2230] hover:border-amber-500/40 bg-[#0A0C12]/70 hover:bg-[#0E111A] p-3.5 text-center transition-all cursor-pointer select-none"
+        >
+          <div className="flex items-center justify-center gap-3 mb-2.5 opacity-60 group-hover:opacity-100 transition-opacity">
+            {/* Google Icon */}
+            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z" />
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
+                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 14.5s.7 4.8 1.9 7.2l3.7-2.9z" />
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z" />
+              </svg>
+            </div>
+            {/* GitHub Icon */}
+            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center text-slate-300">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+            </div>
+            {/* Meta/Facebook Icon */}
+            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center text-[#1877F2]">
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-mono tracking-wider font-semibold">
+            <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
+            <span>PRÓXIMAMENTE // GOOGLE & SOCIAL</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1 font-mono">
+            Acceso con 1-clic en la próxima actualización
+          </p>
         </div>
       </motion.div>
     </div>
