@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { JetBrains_Mono, Outfit } from 'next/font/google'
 import { QueryProvider } from '@/providers/QueryProvider'
+import { FeedbackModal } from '@/components/ui/FeedbackModal'
 import './globals.css'
 
 // ---- Google Fonts -------------------------------------------
@@ -77,7 +78,10 @@ export default function RootLayout({
         className="bg-[#08090C] text-[#F1F5F9] antialiased overflow-hidden"
         suppressHydrationWarning
       >
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <FeedbackModal />
+        </QueryProvider>
       </body>
     </html>
   )
