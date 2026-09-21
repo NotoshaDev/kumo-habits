@@ -26,7 +26,7 @@ export default function LoginPage() {
     const supabase = createClient()
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -39,11 +39,14 @@ export default function LoginPage() {
         retroAudio.playUncheck()
         setMessage({ type: 'error', text: error.message })
       } else {
-        retroAudio.playAchievement()
+        retroAudio.playLevelUp()
         setMessage({
           type: 'success',
-          text: '¡Cuenta creada con éxito! Si Supabase requiere confirmación, revisa tu correo.',
+          text: '¡Cuenta creada con éxito!',
         })
+        if (data?.session) {
+          router.push('/dashboard')
+        }
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({
