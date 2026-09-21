@@ -14,12 +14,16 @@ export function QueryProvider({ children }: QueryProviderProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Keep data fresh for 30s before refetching in background
-            staleTime: 30 * 1000,
-            // Retry once on failure
+            // Keep data fresh for 60s without redundant network trips
+            staleTime: 60 * 1000,
+            // Keep unused data in cache for 10 minutes
+            gcTime: 10 * 60 * 1000,
+            // Retry once on network failure
             retry: 1,
-            // Refetch when window regains focus
-            refetchOnWindowFocus: true,
+            // Avoid jitter/refetch loops on mobile when switching apps
+            refetchOnWindowFocus: false,
+            // Auto refetch when internet reconnects
+            refetchOnReconnect: true,
           },
           mutations: {
             retry: 0,

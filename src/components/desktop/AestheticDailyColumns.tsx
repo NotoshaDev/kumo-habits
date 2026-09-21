@@ -7,6 +7,7 @@ import { AestheticDonutGauge } from '@/components/ui/AestheticDonutGauge'
 import { ICON_MAP } from '@/lib/icon-map'
 import { toISODateString, isToday, getTodayString } from '@/lib/date-utils'
 import { cn } from '@/lib/utils'
+import { parseHabitCategory } from '@/lib/habit-targets'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 
 interface AestheticDailyColumnsProps {
@@ -214,6 +215,20 @@ export function AestheticDailyColumns({
                         >
                           {habit.name}
                         </span>
+                        {(() => {
+                          const target = parseHabitCategory(habit.category).targetDays
+                          return target ? (
+                            <span
+                              className="text-[9px] font-mono font-bold px-1 rounded-sm shrink-0"
+                              style={{
+                                backgroundColor: `${habit.color_hex}15`,
+                                color: habit.color_hex,
+                              }}
+                            >
+                              {target}d
+                            </span>
+                          ) : null
+                        })()}
                       </div>
 
                       {/* Right: Checkbox with creamy feel */}

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { RadialProgress } from '@/components/ui/RadialProgress'
 import { WeeklyBreakdownChart } from '@/components/stats/WeeklyBreakdownChart'
 import { AchievementsModal } from '@/components/ui/AchievementsModal'
+import { DailyQuestsCard } from '@/components/ui/DailyQuestsCard'
+import { parseHabitCategory, getHabitTargetProgress } from '@/lib/habit-targets'
 import type { HabitRow, HabitLogRow, MonthlyGoalRow } from '@/types/database'
 import {
   getHabitConsistency,
@@ -164,6 +166,9 @@ export function DesktopSidePanel({
       {/* XP / Level */}
       <XPBar xp={userXP} level={userLevel} habits={habits} logs={logs} />
 
+      {/* Daily Quests / Objetivos de Hoy */}
+      <DailyQuestsCard />
+
       {/* Quick stats */}
       <div className="grid grid-cols-2 gap-2.5">
         <StatCard
@@ -214,6 +219,11 @@ export function DesktopSidePanel({
           {habits.map((habit) => {
             const pct = getHabitConsistency(logs, habit.id, year, month)
             const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
+            const targetInfo = parseHabitCategory(habit.category)
+            const targetProg = targetInfo.targetDays
+              ? getHabitTargetProgress(logs, habit.id, targetInfo.targetDays)
+              : null
+
             return (
               <div key={habit.id} className="flex items-center gap-2">
                 <span
@@ -222,9 +232,24 @@ export function DesktopSidePanel({
                 >
                   <Icon size={11} />
                 </span>
-                <span className="text-xs font-medium text-[#282321] truncate flex-1">
-                  {habit.name}
-                </span>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-medium text-[#282321] truncate">
+                      {habit.name}
+                    </span>
+                    {targetProg && (
+                      <span
+                        className="px-1.5 py-0.2 font-mono text-[9px] font-bold rounded-md shrink-0"
+                        style={{
+                          backgroundColor: targetProg.isCompleted ? '#FFF8E6' : `${habit.color_hex}15`,
+                          color: targetProg.isCompleted ? '#EFA93A' : habit.color_hex,
+                        }}
+                      >
+                        {targetProg.isCompleted ? '🏆 Reto' : `🎯 ${targetProg.completedDays}/${targetProg.targetDays}d`}
+                      </span>
+                    )}
+                  </div>
+                </div>
                 {/* Mini bar */}
                 <div className="w-16 h-1.5 bg-[#F0EAE1] rounded-full overflow-hidden shrink-0 border border-[#EAE2D8]">
                   <div

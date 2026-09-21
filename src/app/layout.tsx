@@ -1,8 +1,13 @@
 import type { Metadata, Viewport } from 'next'
+import dynamic from 'next/dynamic'
 import { JetBrains_Mono, Outfit } from 'next/font/google'
 import { QueryProvider } from '@/providers/QueryProvider'
-import { FeedbackModal } from '@/components/ui/FeedbackModal'
+import { PwaRegister } from '@/components/ui/PwaRegister'
 import './globals.css'
+
+const FeedbackModal = dynamic(
+  () => import('@/components/ui/FeedbackModal').then((m) => m.FeedbackModal),
+)
 
 // ---- Google Fonts -------------------------------------------
 
@@ -82,6 +87,7 @@ export default function RootLayout({
         <QueryProvider>
           {children}
           <FeedbackModal />
+          <PwaRegister />
         </QueryProvider>
       </body>
     </html>

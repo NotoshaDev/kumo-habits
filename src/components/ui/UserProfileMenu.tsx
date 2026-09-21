@@ -3,10 +3,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LogOut, LogIn, Wifi, ChevronDown, Smartphone } from 'lucide-react'
+import { LogOut, LogIn, Wifi, ChevronDown, Smartphone, Archive, Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 import { InstallAppModal } from '@/components/ui/InstallAppModal'
+import { ArchivedHabitsModal } from '@/components/ui/ArchivedHabitsModal'
+import { NotificationSettingsModal } from '@/components/ui/NotificationSettingsModal'
+import { useArchivedHabits } from '@/hooks/useHabits'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 interface UserProfileMenuProps {
@@ -20,6 +23,9 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const [showInstallModal, setShowInstallModal] = useState(false)
+  const [showArchivedModal, setShowArchivedModal] = useState(false)
+  const [showNotificationModal, setShowNotificationModal] = useState(false)
+  const { data: archivedHabits = [] } = useArchivedHabits()
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -148,6 +154,52 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
               </span>
             </div>
 
+            {/* Archived Habits Option */}
+            <div className="mb-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsOpen(false)
+                  setShowArchivedModal(true)
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] hover:bg-[#FFFDF9] hover:border-[#DFD5CA] text-[#3D2E26] font-medium transition-all cursor-pointer text-xs group"
+              >
+                <div className="flex items-center gap-2">
+                  <Archive className="w-3.5 h-3.5 text-[#EFA93A]" />
+                  <span>Hábitos Archivados</span>
+                </div>
+                {archivedHabits.length > 0 && (
+                  <span className="text-[9px] font-mono font-bold text-[#B87A00] bg-[#FFF8E6] px-1.5 py-0.5 rounded-md border border-[#FFE08A]">
+                    {archivedHabits.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Notification Reminders Option */}
+            <div className="mb-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsOpen(false)
+                  setShowNotificationModal(true)
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] hover:bg-[#FFFDF9] hover:border-[#DFD5CA] text-[#3D2E26] font-medium transition-all cursor-pointer text-xs group"
+              >
+                <div className="flex items-center gap-2">
+                  <Bell className="w-3.5 h-3.5 text-[#F28574]" />
+                  <span>Recordatorios Diarios</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-1.5 py-0.5 rounded-md border border-[#F2C4AF]">
+                  AVISOS
+                </span>
+              </button>
+            </div>
+
             {/* Install in Phone Option */}
             <div className="mb-3">
               <button
@@ -190,10 +242,18 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
         )}
       </AnimatePresence>
 
-      {/* Install App Modal — placed outside the dropdown so closing the dropdown doesn't unmount it */}
+      {/* Modals — placed outside the dropdown so closing the dropdown doesn't unmount them */}
+      <NotificationSettingsModal
+        isOpen={showNotificationModal}
+        onOpenChange={setShowNotificationModal}
+      />
       <InstallAppModal
         isOpen={showInstallModal}
         onOpenChange={setShowInstallModal}
+      />
+      <ArchivedHabitsModal
+        isOpen={showArchivedModal}
+        onOpenChange={setShowArchivedModal}
       />
     </div>
   )

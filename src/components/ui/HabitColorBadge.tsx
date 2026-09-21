@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { parseHabitCategory } from '@/lib/habit-targets'
 
 interface HabitColorBadgeProps {
   color: string
@@ -15,6 +16,8 @@ export function HabitColorBadge({
   size = 'sm',
   className,
 }: HabitColorBadgeProps) {
+  const parsed = label ? parseHabitCategory(label) : null
+
   return (
     <span
       className={cn(
@@ -36,7 +39,21 @@ export function HabitColorBadge({
           backgroundColor: color,
         }}
       />
-      {label && <span>{label}</span>}
+      {parsed && (
+        <span className="flex items-center gap-1">
+          <span>{parsed.cleanCategory}</span>
+          {parsed.targetDays && (
+            <span
+              className="text-[9px] px-1 py-0.2 rounded font-bold"
+              style={{
+                backgroundColor: `${color}25`,
+              }}
+            >
+              {parsed.targetDays}d
+            </span>
+          )}
+        </span>
+      )}
     </span>
   )
 }

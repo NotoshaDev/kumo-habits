@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PixelCheckbox } from '@/components/ui/PixelCheckbox'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
@@ -8,6 +8,9 @@ import { HabitColorBadge } from '@/components/ui/HabitColorBadge'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { EditHabitModal } from '@/components/ui/EditHabitModal'
 import { InstallAppBanner } from '@/components/ui/InstallAppModal'
+import { DailyQuestsCard } from '@/components/ui/DailyQuestsCard'
+import { ReorderHabitsModal } from '@/components/ui/ReorderHabitsModal'
+import { parseHabitCategory, getHabitTargetProgress } from '@/lib/habit-targets'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import {
   getMonthDays,
@@ -20,7 +23,7 @@ import {
 import { getHabitConsistency } from '@/lib/consistency'
 import { ICON_MAP } from '@/lib/icon-map'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight, LayoutGrid, Plus, Pencil } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutGrid, Plus, Pencil, ArrowUpDown } from 'lucide-react'
 
 // ---- Types --------------------------------------------------
 
@@ -44,7 +47,7 @@ interface WeekSelectorProps {
   month: number
 }
 
-function WeekSelector({ weeks, selectedWeekIdx, onSelect, year, month }: WeekSelectorProps) {
+const WeekSelector = memo(function WeekSelector({ weeks, selectedWeekIdx, onSelect, year, month }: WeekSelectorProps) {
   return (
     <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none">
       {weeks.map((week, wIdx) => {
@@ -77,7 +80,7 @@ function WeekSelector({ weeks, selectedWeekIdx, onSelect, year, month }: WeekSel
       })}
     </div>
   )
-}
+})
 
 // ---- Habit Card (Mobile) ------------------------------------
 
@@ -85,16 +88,22 @@ interface HabitCardProps {
   habit: HabitRow
   weekDays: (number | null)[]
   logMap: Record<string, boolean>
+  logs: HabitLogRow[]
   year: number
   month: number
   onToggle: (habitId: string, date: string, currentlyCompleted: boolean) => void
   consistency: number
 }
 
-function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency }: HabitCardProps) {
+const HabitCard = memo(function HabitCard({ habit, weekDays, logMap, logs, year, month, onToggle, consistency }: HabitCardProps) {
   const today = getTodayString()
   const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
   const validDays = weekDays.filter((d): d is number => d !== null)
+
+  const targetInfo = parseHabitCategory(habit.category)
+  const targetProgress = targetInfo.targetDays
+    ? getHabitTargetProgress(logs, habit.id, targetInfo.targetDays)
+    : null
 
   return (
     <motion.div
@@ -163,8 +172,8 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
               </span>
               <PixelCheckbox
                 checked={completed}
-                onChange={() => !isFuture && onToggle(habit.id, dateStr, completed)}
                 color={habit.color_hex}
+                onChange={() => onToggle(habit.id, dateStr, completed)}
                 disabled={isFuture}
                 size="sm"
                 aria-label={`${habit.name} ${dateStr}`}
@@ -173,9 +182,37 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
           )
         })}
       </div>
+
+      {/* Target Days Challenge Progress (if challenge habit) */}
+      {targetProgress && (
+        <div className="px-4 py-2.5 bg-[#FAF7F2] border-t border-[#EAE2D8] flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[11px] font-mono font-bold flex items-center gap-1"
+              style={{ color: targetProgress.isCompleted ? '#EFA93A' : habit.color_hex }}
+            >
+              {targetProgress.isCompleted
+                ? '🏆 ¡Reto Completado!'
+                : `🎯 Reto: ${targetProgress.completedDays}/${targetProgress.targetDays} días`}
+            </span>
+            <span className="text-[10px] text-[#8C7A70] font-mono font-semibold">
+              ({targetProgress.percent}%)
+            </span>
+          </div>
+          <div className="w-24 sm:w-32 h-2 bg-[#EAE2D8] rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${targetProgress.percent}%`,
+                backgroundColor: targetProgress.isCompleted ? '#EFA93A' : habit.color_hex,
+              }}
+            />
+          </div>
+        </div>
+      )}
     </motion.div>
   )
-}
+})
 
 // ---- Main Component -----------------------------------------
 
@@ -219,9 +256,9 @@ export function MobileTrackerView({
   const activeWeek = weeks[selectedWeekIdx] ?? []
 
   // Today's completion
-  const completedToday = habits.filter(
-    (h) => logMap[`${h.id}__${today}`],
-  ).length
+  const completedToday = useMemo(() => {
+    return habits.filter((h) => logMap[`${h.id}__${today}`]).length
+  }, [habits, logMap, today])
 
   return (
     <div className="flex flex-col h-full bg-[#FAF7F2] text-[#3D2E26]">
@@ -258,6 +295,20 @@ export function MobileTrackerView({
             )}
           </div>
           <div className="flex items-center gap-1.5">
+            {habits.length > 1 && (
+              <ReorderHabitsModal
+                trigger={
+                  <button
+                    type="button"
+                    className="p-1 rounded-lg border border-[#EAE2D8] bg-[#FFFFFF] hover:bg-[#FAF7F2] text-[#8C7A70] hover:text-[#C95D47] hover:border-[#F2C4AF] transition-all cursor-pointer shadow-xs"
+                    title="Organizar orden de hábitos"
+                    aria-label="Organizar hábitos"
+                  >
+                    <ArrowUpDown size={12} />
+                  </button>
+                }
+              />
+            )}
             <span className="font-mono text-[10px] text-[#8C7A70] font-medium">HOY:</span>
             <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FDF2ED] border border-[#F2C4AF] text-[#C95D47] shadow-xs">
               {completedToday}/{habits.length}
@@ -318,6 +369,9 @@ export function MobileTrackerView({
               {/* Install PWA Guide Banner */}
               <InstallAppBanner />
 
+              {/* Misiones Diarias / Objetivos de Hoy */}
+              <DailyQuestsCard className="mx-4 mb-3.5" />
+
               {habits.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <p className="text-[#8C7A70] font-mono text-sm mb-4">
@@ -340,6 +394,7 @@ export function MobileTrackerView({
                       habit={habit}
                       weekDays={activeWeek}
                       logMap={logMap}
+                      logs={logs}
                       year={year}
                       month={month}
                       onToggle={onToggle}

@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trophy, X, Lock, CheckCircle2, Zap } from 'lucide-react'
 import { ICON_MAP } from '@/lib/icon-map'
-import { evaluateAchievements, type Achievement } from '@/lib/achievements'
+import { calculateGamificationProgress, type Achievement } from '@/lib/achievements'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import { cn } from '@/lib/utils'
 
@@ -19,8 +19,13 @@ interface AchievementsModalProps {
 export function AchievementsModal({ habits, logs, userXP = 0, trigger }: AchievementsModalProps) {
   const [open, setOpen] = useState(false)
 
-  const achievements = evaluateAchievements(habits, logs, userXP)
-  const unlockedCount = achievements.filter((a) => a.unlocked).length
+  const gamification = useMemo(() => {
+    return calculateGamificationProgress(habits, logs)
+  }, [habits, logs])
+
+  const totalXP = Math.max(userXP, gamification.totalXP)
+  const achievements = gamification.achievements
+  const unlockedCount = gamification.unlockedAchievementsCount
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -78,9 +83,14 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                 {/* Overall Progress */}
                 <div className="mb-5 p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EAE2D8]">
                   <div className="flex justify-between items-center mb-2 font-mono">
-                    <span className="text-xs font-bold text-[#7A6A60] uppercase tracking-wider">
-                      Progreso de Trofeos
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-[#7A6A60] uppercase tracking-wider">
+                        Progreso de Trofeos
+                      </span>
+                      <span className="text-[10px] font-bold text-[#C95D47] bg-[#FDF2ED] px-2 py-0.5 rounded-md border border-[#F2C4AF]">
+                        {totalXP} XP
+                      </span>
+                    </div>
                     <span className="text-xs font-bold text-[#B87A00]">
                       {Math.round((unlockedCount / achievements.length) * 100)}%
                     </span>

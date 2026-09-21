@@ -10,6 +10,7 @@ import { EditHabitModal } from '@/components/ui/EditHabitModal'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import { getMonthDays, toISODateString, isToday, getTodayString } from '@/lib/date-utils'
 import { getHabitConsistency } from '@/lib/consistency'
+import { parseHabitCategory, getHabitTargetProgress } from '@/lib/habit-targets'
 import { ICON_MAP } from '@/lib/icon-map'
 
 // ---- Types --------------------------------------------------
@@ -70,10 +71,15 @@ const MatrixCell = memo(function MatrixCell({
 interface HabitNameCellProps {
   habit: HabitRow
   consistency: number
+  logs: HabitLogRow[]
 }
 
-const HabitNameCell = memo(function HabitNameCell({ habit, consistency }: HabitNameCellProps) {
+const HabitNameCell = memo(function HabitNameCell({ habit, consistency, logs }: HabitNameCellProps) {
   const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
+  const targetInfo = parseHabitCategory(habit.category)
+  const targetProg = targetInfo.targetDays
+    ? getHabitTargetProgress(logs, habit.id, targetInfo.targetDays)
+    : null
 
   return (
     <td className="sticky left-0 z-20 bg-[#FFFFFF] border-r border-[#EAE2D8] min-w-[180px] max-w-[220px] px-3 py-2 group/cell shadow-xs">
@@ -89,9 +95,23 @@ const HabitNameCell = memo(function HabitNameCell({ habit, consistency }: HabitN
             <span className="text-[#3D2E26] text-xs font-semibold truncate leading-tight">
               {habit.name}
             </span>
-            <span className="font-mono text-[10px] font-bold leading-tight mt-0.5" style={{ color: habit.color_hex }}>
-              {consistency}%
-            </span>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="font-mono text-[10px] font-bold leading-tight" style={{ color: habit.color_hex }}>
+                {consistency}%
+              </span>
+              {targetProg && (
+                <span
+                  className="font-mono text-[9px] font-bold px-1 rounded-sm leading-tight"
+                  style={{
+                    backgroundColor: targetProg.isCompleted ? '#FFF8E6' : `${habit.color_hex}15`,
+                    color: targetProg.isCompleted ? '#EFA93A' : habit.color_hex,
+                  }}
+                  title={targetProg.isCompleted ? '¡Reto Completado!' : `Reto: ${targetProg.completedDays}/${targetProg.targetDays} días`}
+                >
+                  {targetProg.isCompleted ? '🏆 Reto' : `🎯 ${targetProg.completedDays}/${targetProg.targetDays}d`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -214,6 +234,7 @@ export function DesktopMatrixGrid({
               <HabitNameCell
                 habit={habit}
                 consistency={consistencyMap[habit.id] ?? 0}
+                logs={logs}
               />
 
               {/* Day cells */}

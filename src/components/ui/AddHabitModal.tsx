@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, X, Check } from 'lucide-react'
+import { Plus, X, Check, Target, Infinity as InfinityIcon } from 'lucide-react'
 import { ICON_MAP, ICON_KEYS } from '@/lib/icon-map'
 import { useCreateHabit } from '@/hooks/useHabits'
+import { formatHabitCategory } from '@/lib/habit-targets'
 import { cn } from '@/lib/utils'
 
 const PRESET_COLORS = [
@@ -45,6 +46,8 @@ export function AddHabitModal({ open, onOpenChange, trigger }: AddHabitModalProp
   const [category, setCategory] = useState('Salud')
   const [colorHex, setColorHex] = useState('#10B981')
   const [iconKey, setIconKey] = useState('star')
+  const [isChallenge, setIsChallenge] = useState(false)
+  const [targetDays, setTargetDays] = useState<number>(21)
   const [errorMsg, setErrorMsg] = useState('')
 
   const createHabit = useCreateHabit()
@@ -56,16 +59,22 @@ export function AddHabitModal({ open, onOpenChange, trigger }: AddHabitModalProp
       return
     }
 
+    const finalCategory = isChallenge
+      ? formatHabitCategory(category.trim() || 'General', targetDays)
+      : (category.trim() || 'General')
+
     setErrorMsg('')
     try {
       await createHabit.mutateAsync({
         name: name.trim(),
-        category: category.trim() || 'General',
+        category: finalCategory,
         color_hex: colorHex,
         icon_key: iconKey,
       })
       // Reset & close
       setName('')
+      setIsChallenge(false)
+      setTargetDays(21)
       setIsOpen(false)
     } catch (err) {
       console.error('Error creating habit:', err)
@@ -188,6 +197,95 @@ export function AddHabitModal({ open, onOpenChange, trigger }: AddHabitModalProp
                       placeholder="O escribe una categoría personalizada..."
                       className="w-full px-3.5 py-2 bg-[#FAF7F2] border border-[#EAE2D8] rounded-xl text-[#3D2E26] placeholder-[#A59990] text-xs focus:outline-none focus:border-[#F28574] focus:bg-[#FFFFFF] transition-all"
                     />
+                  </div>
+
+                  {/* Habit Type: Infinite Routine vs Target Days Challenge */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block font-mono text-xs font-semibold text-[#7A6A60] uppercase tracking-wider">
+                        Modalidad
+                      </label>
+                      <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-2 py-0.5 rounded-md border border-[#F2C4AF]">
+                        {isChallenge ? 'RETO CON META' : 'RUTINA INFINITA'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsChallenge(false)}
+                        className={cn(
+                          'p-2.5 rounded-xl border text-xs font-semibold text-left transition-all cursor-pointer flex flex-col gap-0.5',
+                          !isChallenge
+                            ? 'bg-[#FDF2ED] border-[#F2C4AF] text-[#C95D47] shadow-xs ring-1 ring-[#F2C4AF]'
+                            : 'bg-[#FAF7F2] border-[#EAE2D8] text-[#7A6A60] hover:bg-[#F2ECE4]',
+                        )}
+                      >
+                        <span className="font-bold flex items-center gap-1.5">
+                          <InfinityIcon size={14} className="text-[#F28574]" />
+                          <span>Continuo</span>
+                        </span>
+                        <span className="text-[10px] text-[#8C7A70] leading-tight">Sin fecha límite, para siempre</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsChallenge(true)}
+                        className={cn(
+                          'p-2.5 rounded-xl border text-xs font-semibold text-left transition-all cursor-pointer flex flex-col gap-0.5',
+                          isChallenge
+                            ? 'bg-[#FDF2ED] border-[#F2C4AF] text-[#C95D47] shadow-xs ring-1 ring-[#F2C4AF]'
+                            : 'bg-[#FAF7F2] border-[#EAE2D8] text-[#7A6A60] hover:bg-[#F2ECE4]',
+                        )}
+                      >
+                        <span className="font-bold flex items-center gap-1.5">
+                          <Target size={14} className="text-[#F28574]" />
+                          <span>Reto de Días</span>
+                        </span>
+                        <span className="text-[10px] text-[#8C7A70] leading-tight">Meta fija de días con trofeo</span>
+                      </button>
+                    </div>
+
+                    {isChallenge && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-3 rounded-2xl bg-[#FFFDF9] border border-[#F2C4AF] space-y-2.5"
+                      >
+                        <span className="text-[11px] font-mono text-[#7A6A60] block font-semibold">
+                          Meta de días para completar:
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {[7, 14, 21, 30, 60, 90].map((days) => (
+                            <button
+                              key={days}
+                              type="button"
+                              onClick={() => setTargetDays(days)}
+                              className={cn(
+                                'px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border cursor-pointer',
+                                targetDays === days
+                                  ? 'bg-[#F28574] text-white border-[#E07261] shadow-xs'
+                                  : 'bg-[#FFFFFF] text-[#3D2E26] border-[#EAE2D8] hover:bg-[#FAF7F2]',
+                              )}
+                            >
+                              {days} días
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className="text-xs text-[#8C7A70]">O número personalizado:</span>
+                          <input
+                            type="number"
+                            min="1"
+                            max="365"
+                            value={targetDays || ''}
+                            onChange={(e) => setTargetDays(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-20 px-2.5 py-1 bg-[#FFFFFF] border border-[#EAE2D8] rounded-lg text-xs font-mono font-bold text-[#3D2E26] text-center focus:outline-none focus:border-[#F28574]"
+                          />
+                          <span className="text-xs font-mono text-[#8C7A70]">días</span>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
 
                   {/* Color Swatches */}

@@ -1,5 +1,5 @@
 import type { HabitRow, HabitLogRow } from '@/types/database'
-import { getCurrentStreak } from '@/lib/gamification'
+import { getCurrentStreak, getLevelFromXP } from '@/lib/gamification'
 import { getTodayString } from '@/lib/date-utils'
 
 export interface Achievement {
@@ -98,4 +98,59 @@ export function evaluateAchievements(
       progress: Math.min(100, (userXP / 400) * 100),
     },
   ]
+}
+
+export interface GamificationProgress {
+  totalXP: number
+  level: number
+  xpToNextLevel: number
+  progress: number
+  achievements: Achievement[]
+  unlockedAchievementsCount: number
+  habitsXP: number
+  achievementsXP: number
+}
+
+export function calculateGamificationProgress(
+  habits: HabitRow[],
+  logs: HabitLogRow[],
+  allTimeLogsCount?: number,
+): GamificationProgress {
+  const currentMonthCompleted = logs.filter((l) => l.completed).length
+  const totalCompletedLogs = allTimeLogsCount !== undefined
+    ? Math.max(allTimeLogsCount, currentMonthCompleted)
+    : currentMonthCompleted
+
+  const habitsXP = totalCompletedLogs * 15 // 15 XP per habit
+
+  // First pass: evaluate achievements with base habits XP
+  let achievements = evaluateAchievements(habits, logs, habitsXP)
+  let achievementsXP = achievements
+    .filter((a) => a.unlocked)
+    .reduce((sum, a) => sum + a.xpBonus, 0)
+
+  let intermediateXP = habitsXP + achievementsXP
+
+  // Second pass: if intermediate XP passes the threshold for level_5, unlock it
+  if (intermediateXP >= 400) {
+    achievements = evaluateAchievements(habits, logs, intermediateXP)
+    achievementsXP = achievements
+      .filter((a) => a.unlocked)
+      .reduce((sum, a) => sum + a.xpBonus, 0)
+  }
+
+  const totalXP = habitsXP + achievementsXP
+  const { level, xpToNextLevel, progress } = getLevelFromXP(totalXP)
+  const unlockedAchievementsCount = achievements.filter((a) => a.unlocked).length
+
+  return {
+    totalXP,
+    level,
+    xpToNextLevel,
+    progress,
+    achievements,
+    unlockedAchievementsCount,
+    habitsXP,
+    achievementsXP,
+  }
 }

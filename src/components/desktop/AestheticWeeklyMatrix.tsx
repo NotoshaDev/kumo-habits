@@ -9,6 +9,7 @@ import { EditHabitModal } from '@/components/ui/EditHabitModal'
 import { ICON_MAP } from '@/lib/icon-map'
 import { toISODateString, isToday, getTodayString } from '@/lib/date-utils'
 import { cn } from '@/lib/utils'
+import { parseHabitCategory, getHabitTargetProgress } from '@/lib/habit-targets'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 
 interface AestheticWeeklyMatrixProps {
@@ -261,6 +262,10 @@ export function AestheticWeeklyMatrix({
                     total: 0,
                     percent: 0,
                   }
+                  const targetInfo = parseHabitCategory(habit.category)
+                  const targetProg = targetInfo.targetDays
+                    ? getHabitTargetProgress(logs, habit.id, targetInfo.targetDays)
+                    : null
 
                   return (
                     <tr
@@ -280,9 +285,21 @@ export function AestheticWeeklyMatrix({
                             >
                               <Icon size={14} />
                             </span>
-                            <span className="font-semibold text-[#282321] truncate">
-                              {habit.name}
-                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-semibold text-[#282321] truncate">
+                                {habit.name}
+                              </span>
+                              {targetProg && (
+                                <span
+                                  className="inline-flex items-center gap-1 font-mono text-[9px] font-bold mt-0.5"
+                                  style={{ color: targetProg.isCompleted ? '#EFA93A' : habit.color_hex }}
+                                >
+                                  {targetProg.isCompleted
+                                    ? '🏆 Reto Completado'
+                                    : `🎯 Reto: ${targetProg.completedDays}/${targetProg.targetDays}d (${targetProg.percent}%)`}
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           <EditHabitModal

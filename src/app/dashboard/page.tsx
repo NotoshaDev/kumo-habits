@@ -31,27 +31,27 @@ export default async function DashboardPage() {
     } = await supabase.auth.getUser()
 
     if (user) {
-      // Fetch profile for XP and level
-      const { data: profile } = await (supabase as any)
-        .from('profiles')
-        .select('level, xp')
-        .eq('id', user.id)
-        .single()
+      // Fetch profile and monthly goals in parallel for maximum speed
+      const [profileRes, goalsRes] = await Promise.all([
+        (supabase as any)
+          .from('profiles')
+          .select('level, xp')
+          .eq('id', user.id)
+          .single(),
+        (supabase as any)
+          .from('monthly_goals')
+          .select('*')
+          .eq('year', year)
+          .eq('month', month),
+      ])
 
-      if (profile) {
-        userLevel = profile.level ?? 1
-        userXP = Number(profile.xp ?? 0)
+      if (profileRes.data) {
+        userLevel = profileRes.data.level ?? 1
+        userXP = Number(profileRes.data.xp ?? 0)
       }
 
-      // Fetch monthly goals
-      const { data: userGoals } = await (supabase as any)
-        .from('monthly_goals')
-        .select('*')
-        .eq('year', year)
-        .eq('month', month)
-
-      if (userGoals) {
-        goals = userGoals as MonthlyGoalRow[]
+      if (goalsRes.data) {
+        goals = goalsRes.data as MonthlyGoalRow[]
       }
     }
   } catch (err) {

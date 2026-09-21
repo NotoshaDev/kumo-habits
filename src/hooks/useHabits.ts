@@ -10,6 +10,7 @@ import { toISODateString } from '@/lib/date-utils'
 export const habitKeys = {
   all: ['habits'] as const,
   active: () => [...habitKeys.all, 'active'] as const,
+  archived: () => [...habitKeys.all, 'archived'] as const,
   logs: (year: number, month: number) => ['habit_logs', year, month] as const,
 }
 
@@ -38,10 +39,18 @@ export function useHabits() {
 // ---- Hooks: Fetch Month Logs ---------------------------------
 
 /**
- * Fetches all habit logs for a given year/month.
+ * Fetches habit logs for a given year/month, extending 45 days back
+ * so cross-month streaks and challenge progress compute accurately.
  */
 export function useHabitLogs(year: number, month: number) {
-  const startDate = toISODateString(year, month, 1)
+  const firstOfMonth = new Date(year, month - 1, 1)
+  const streakWindowStart = new Date(firstOfMonth)
+  streakWindowStart.setDate(streakWindowStart.getDate() - 45)
+  const queryStartDate = toISODateString(
+    streakWindowStart.getFullYear(),
+    streakWindowStart.getMonth() + 1,
+    streakWindowStart.getDate(),
+  )
   const endDate = toISODateString(year, month, new Date(year, month, 0).getDate())
 
   return useQuery({
@@ -51,7 +60,7 @@ export function useHabitLogs(year: number, month: number) {
       const { data, error } = await supabase
         .from('habit_logs')
         .select('*')
-        .gte('date', startDate)
+        .gte('date', queryStartDate)
         .lte('date', endDate)
 
       if (error) throw error
@@ -286,6 +295,156 @@ export function useArchiveHabit() {
       queryClient.setQueryData<HabitRow[]>(habitKeys.active(), (old) => {
         return (old ?? []).filter((h) => h.id !== archivedId)
       })
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
+      queryClient.invalidateQueries({ queryKey: habitKeys.archived() })
+    },
+  })
+}
+
+// ---- Archived Habits Query & Unarchive Mutation --------------
+
+/**
+ * Fetches habits that are currently archived.
+ */
+export function useArchivedHabits() {
+  return useQuery({
+    queryKey: habitKeys.archived(),
+    queryFn: async (): Promise<HabitRow[]> => {
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { data, error } = await db
+        .from('habits')
+        .select('*')
+        .eq('is_archived', true)
+        .order('position', { ascending: true })
+
+      if (error) throw error
+      return data ?? []
+    },
+  })
+}
+
+/**
+ * Restores an archived habit back into the active routine.
+ */
+export function useUnarchiveHabit() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (habitId: string) => {
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const { error } = await db.from('habits').update({ is_archived: false }).eq('id', habitId)
+      if (error) throw error
+      return habitId
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
+      queryClient.invalidateQueries({ queryKey: habitKeys.archived() })
+    },
+  })
+}
+
+// ---- Reorder Habits Mutations --------------------------------
+
+export interface ReorderHabitArgs {
+  habitId: string
+  direction: 'up' | 'down'
+}
+
+export function useReorderHabit() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({ habitId, direction }: ReorderHabitArgs) => {
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const currentHabits = queryClient.getQueryData<HabitRow[]>(habitKeys.active()) ?? []
+      const index = currentHabits.findIndex((h) => h.id === habitId)
+      if (index === -1) return
+
+      const targetIndex = direction === 'up' ? index - 1 : index + 1
+      if (targetIndex < 0 || targetIndex >= currentHabits.length) return
+
+      const habitA = currentHabits[index]
+      const habitB = currentHabits[targetIndex]
+
+      await Promise.all([
+        db.from('habits').update({ position: habitB.position ?? targetIndex }).eq('id', habitA.id),
+        db.from('habits').update({ position: habitA.position ?? index }).eq('id', habitB.id),
+      ])
+    },
+    onMutate: async ({ habitId, direction }) => {
+      await queryClient.cancelQueries({ queryKey: habitKeys.active() })
+      const previousHabits = queryClient.getQueryData<HabitRow[]>(habitKeys.active()) ?? []
+
+      const index = previousHabits.findIndex((h) => h.id === habitId)
+      if (index === -1) return { previousHabits }
+
+      const targetIndex = direction === 'up' ? index - 1 : index + 1
+      if (targetIndex < 0 || targetIndex >= previousHabits.length) return { previousHabits }
+
+      const updated = [...previousHabits]
+      const [moved] = updated.splice(index, 1)
+      updated.splice(targetIndex, 0, moved)
+
+      const reindexed = updated.map((h, i) => ({ ...h, position: i }))
+      queryClient.setQueryData(habitKeys.active(), reindexed)
+
+      return { previousHabits }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousHabits) {
+        queryClient.setQueryData(habitKeys.active(), context.previousHabits)
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: habitKeys.active() })
+    },
+  })
+}
+
+export function useBatchReorderHabits() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      const supabase = createClient()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any
+
+      const updates = orderedIds.map((id, index) =>
+        db.from('habits').update({ position: index }).eq('id', id),
+      )
+      await Promise.all(updates)
+    },
+    onMutate: async (orderedIds) => {
+      await queryClient.cancelQueries({ queryKey: habitKeys.active() })
+      const previousHabits = queryClient.getQueryData<HabitRow[]>(habitKeys.active()) ?? []
+      const habitMap = new Map(previousHabits.map((h) => [h.id, h]))
+      const reordered = orderedIds
+        .map((id, index) => {
+          const h = habitMap.get(id)
+          return h ? { ...h, position: index } : null
+        })
+        .filter((h): h is HabitRow => h !== null)
+
+      queryClient.setQueryData(habitKeys.active(), reordered)
+      return { previousHabits }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousHabits) {
+        queryClient.setQueryData(habitKeys.active(), context.previousHabits)
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: habitKeys.active() })
     },
   })

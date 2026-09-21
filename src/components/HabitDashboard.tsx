@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy, CalendarDays, MessageSquare, Columns3 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy, CalendarDays, MessageSquare, Columns3, ArrowUpDown } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useHabits, useHabitLogs, useToggleHabitLog } from '@/hooks/useHabits'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
@@ -12,9 +12,15 @@ import { AestheticDailyColumns } from '@/components/desktop/AestheticDailyColumn
 import { MobileTrackerView } from '@/components/mobile/MobileTrackerView'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { AchievementsModal } from '@/components/ui/AchievementsModal'
+import { ReorderHabitsModal } from '@/components/ui/ReorderHabitsModal'
 import { UserProfileMenu } from '@/components/ui/UserProfileMenu'
 import { retroAudio } from '@/lib/sound-effects'
 import { formatMonthLabel, getPrevMonth, getNextMonth } from '@/lib/date-utils'
+import { calculateGamificationProgress } from '@/lib/achievements'
+import { getLevelFromXP } from '@/lib/gamification'
+import { getStoredDailyQuestXP, QUEST_XP_EVENT } from '@/hooks/useDailyQuests'
+import { useNotificationReminder } from '@/hooks/useNotificationReminder'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import type { MonthlyGoalRow, HabitRow, HabitLogRow } from '@/types/database'
 
@@ -272,10 +278,24 @@ function MobileHeader({
           }
         />
 
+        {habits.length > 1 && (
+          <ReorderHabitsModal
+            trigger={
+              <button
+                className="flex items-center justify-center w-7 h-7 rounded-lg border border-[#EAE2D8] bg-[#FFFFFF] hover:bg-[#FAF7F2] text-[#8C7A70] hover:text-[#C95D47] hover:border-[#F2C4AF] transition-all cursor-pointer shadow-xs"
+                title="Organizar orden de hábitos"
+                aria-label="Organizar hábitos"
+              >
+                <ArrowUpDown size={13} />
+              </button>
+            }
+          />
+        )}
+
         <AddHabitModal
           trigger={
             <button
-              className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#F28574] text-white hover:bg-[#E07261] transition-all duration-150 active:scale-95 shadow-sm"
+              className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#F28574] text-white hover:bg-[#E07261] transition-all duration-150 active:scale-95 shadow-sm cursor-pointer"
               aria-label="Agregar Hábito"
             >
               <Plus size={15} className="stroke-[3]" />
@@ -365,6 +385,56 @@ export function HabitDashboard({
     [toggleMutation],
   )
 
+  // Dynamic Gamification & XP calculation from habits, logs, and daily quests
+  const [todayQuestXP, setTodayQuestXP] = useState(0)
+
+  useEffect(() => {
+    setTodayQuestXP(getStoredDailyQuestXP())
+
+    const handleQuestUpdate = (e: Event) => {
+      const custom = e as CustomEvent<{ questXP: number }>
+      if (custom?.detail?.questXP !== undefined) {
+        setTodayQuestXP(custom.detail.questXP)
+      } else {
+        setTodayQuestXP(getStoredDailyQuestXP())
+      }
+    }
+
+    window.addEventListener(QUEST_XP_EVENT, handleQuestUpdate)
+    window.addEventListener('storage', handleQuestUpdate)
+    return () => {
+      window.removeEventListener(QUEST_XP_EVENT, handleQuestUpdate)
+      window.removeEventListener('storage', handleQuestUpdate)
+    }
+  }, [])
+
+  const gamification = useMemo(() => {
+    return calculateGamificationProgress(habits, logs)
+  }, [habits, logs])
+
+  const currentXP = Math.max(userXP, gamification.totalXP + todayQuestXP)
+  const derivedLevel = getLevelFromXP(currentXP).level
+  const currentLevel = Math.max(userLevel, gamification.level, derivedLevel)
+
+  // Sync calculated XP and level to Supabase profile in background
+  useEffect(() => {
+    if (currentXP > 0) {
+      const supabase = createClient()
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          (supabase as any)
+            .from('profiles')
+            .update({ xp: currentXP, level: currentLevel, updated_at: new Date().toISOString() })
+            .eq('id', user.id)
+            .then(() => {})
+        }
+      })
+    }
+  }, [currentXP, currentLevel])
+
+  // Background daily reminder engine
+  useNotificationReminder(habits, logs)
+
   // ---- Render ------------------------------------------------
 
   // Mobile layout
@@ -376,8 +446,8 @@ export function HabitDashboard({
           onToggleSound={handleToggleSound}
           habits={habits}
           logs={logs}
-          userXP={userXP}
-          userLevel={userLevel}
+          userXP={currentXP}
+          userLevel={currentLevel}
         />
         {isLoading ? (
           <LoadingSkeleton />
@@ -408,8 +478,8 @@ export function HabitDashboard({
         onToggleSound={handleToggleSound}
         habits={habits}
         logs={logs}
-        userXP={userXP}
-        userLevel={userLevel}
+        userXP={currentXP}
+        userLevel={currentLevel}
       />
 
       <div className="flex flex-1 gap-0 overflow-hidden">
@@ -504,8 +574,8 @@ export function HabitDashboard({
               goals={goals}
               year={year}
               month={month}
-              userXP={userXP}
-              userLevel={userLevel}
+              userXP={currentXP}
+              userLevel={currentLevel}
             />
           )}
         </div>
