@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, KeyRound, UserPlus, Loader2, Sparkles } from 'lucide-react'
+import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, KeyRound, UserPlus, Loader2, Info, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
@@ -69,40 +69,39 @@ export default function LoginPage() {
     retroAudio.playUncheck()
     setMessage({
       type: 'error',
-      text: '⚡ Acceso con Google y redes sociales en desarrollo. Por favor ingresa con correo y contraseña.',
+      text: 'Acceso con Google y redes sociales en desarrollo. Por favor ingresa con correo y contraseña.',
     })
   }
 
   return (
-    <div className="min-h-screen bg-[#08090C] text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden font-mono selection:bg-[#10B981] selection:text-black">
-      {/* Retro Arcade Grid & Ambient Glows */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E223015_1px,transparent_1px),linear-gradient(to_bottom,#1E223015_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#10B981]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#3B82F6]/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-[#FAF7F2] text-[#282321] flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans selection:bg-[#4EBA88]/25 selection:text-[#282321]">
+      {/* Soft Cake & Bakery Ambient Glows */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#98D8AA]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#F7A8B8]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 -right-20 w-72 h-72 bg-[#FFEAA7]/30 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-[#10121A]/90 border border-[#1E2230] rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative z-10"
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className="w-full max-w-md bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-6 sm:p-8 shadow-[0_12px_40px_rgba(78,64,53,0.08)] relative z-10"
       >
         {/* Header */}
         <div className="text-center mb-6">
           {/* Logo lockup */}
           <div className="flex items-center justify-center gap-2.5 mb-3">
-            {/* Pixel cloud icon — the "Kumo" (雲) */}
-            <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_16px_rgba(16,185,129,0.25)]">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            {/* Cute cloud icon with bakery gradient */}
+            <div className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-[#4EBA88]/15 via-[#F2728C]/15 to-[#FFEAA7]/20 border border-[#EAE2D8] shadow-[0_4px_12px_rgba(78,64,53,0.06)]">
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
-                  fill="url(#cloud-grad)"
-                  opacity="0.9"
+                  fill="url(#cloud-cake-grad)"
                 />
                 <defs>
-                  <linearGradient id="cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#10B981" />
-                    <stop offset="100%" stopColor="#38BDF8" />
+                  <linearGradient id="cloud-cake-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#4EBA88" />
+                    <stop offset="100%" stopColor="#F2728C" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -110,17 +109,19 @@ export default function LoginPage() {
 
             {/* Wordmark */}
             <div className="text-left">
-              <h1 className="text-xl sm:text-2xl font-extrabold leading-none tracking-tight">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#34D399] to-[#38BDF8]">Kumo</span>
-                <span className="text-slate-100"> Habits</span>
+              <h1 className="text-2xl font-extrabold leading-none tracking-tight">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4EBA88] via-[#F2728C] to-[#EFA93A]">
+                  Kumo
+                </span>
+                <span className="text-[#282321]"> Habits</span>
               </h1>
-              <p className="text-[9px] text-slate-500 font-mono tracking-[0.2em] leading-none mt-0.5 uppercase">
+              <p className="text-[10px] text-[#9E928C] font-mono tracking-[0.2em] leading-none mt-0.5 uppercase font-semibold">
                 by NotoshaDev
               </p>
             </div>
           </div>
 
-          <p className="text-xs text-slate-300/90 mt-3 font-mono leading-relaxed max-w-sm mx-auto">
+          <p className="text-xs text-[#6B605B] mt-2 font-sans leading-relaxed max-w-sm mx-auto">
             Esto es una prueba piloto, cualquier sugerencia o mejora me ayudaria mucho!
           </p>
         </div>
@@ -128,25 +129,25 @@ export default function LoginPage() {
         {/* Feedback Message */}
         {message && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`mb-5 p-3 rounded-lg border text-xs flex items-center gap-2.5 ${
+            className={`mb-5 p-3 rounded-2xl border text-xs flex items-center gap-2.5 ${
               message.type === 'success'
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                : 'bg-rose-950/40 border-rose-500/40 text-rose-300'
+                ? 'bg-[#EBF7F1] border-[#4EBA88]/40 text-[#246348]'
+                : 'bg-[#FDF0F2] border-[#F2728C]/40 text-[#A62742]'
             }`}
           >
             {message.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#4EBA88] shrink-0" />
             ) : (
-              <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+              <ShieldAlert className="w-4 h-4 text-[#F2728C] shrink-0" />
             )}
-            <span>{message.text}</span>
+            <span className="font-medium">{message.text}</span>
           </motion.div>
         )}
 
         {/* Mode Selector Toggle */}
-        <div className="grid grid-cols-2 p-1 bg-[#08090C] rounded-lg border border-[#1E2230] mb-5 text-xs font-semibold">
+        <div className="grid grid-cols-2 p-1 bg-[#F5EFEB] rounded-2xl border border-[#EAE2D8] mb-5 text-xs font-semibold">
           <button
             type="button"
             onClick={() => {
@@ -154,13 +155,13 @@ export default function LoginPage() {
               setIsSignUp(false)
               setMessage(null)
             }}
-            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl transition-all cursor-pointer ${
               !isSignUp
-                ? 'bg-[#1E2230] text-[#10B981] shadow-sm font-bold shadow-[0_0_8px_rgba(16,185,129,0.15)]'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#FFFFFF] text-[#282321] shadow-sm font-bold border border-[#EAE2D8]'
+                : 'text-[#6B605B] hover:text-[#282321]'
             }`}
           >
-            <KeyRound className="w-3.5 h-3.5" />
+            <KeyRound className="w-3.5 h-3.5 text-[#4EBA88]" />
             <span>Iniciar Sesión</span>
           </button>
           <button
@@ -170,13 +171,13 @@ export default function LoginPage() {
               setIsSignUp(true)
               setMessage(null)
             }}
-            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-md transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl transition-all cursor-pointer ${
               isSignUp
-                ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm font-bold shadow-[0_0_8px_rgba(56,189,248,0.15)]'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#FFFFFF] text-[#282321] shadow-sm font-bold border border-[#EAE2D8]'
+                : 'text-[#6B605B] hover:text-[#282321]'
             }`}
           >
-            <UserPlus className="w-3.5 h-3.5" />
+            <UserPlus className="w-3.5 h-3.5 text-[#F2728C]" />
             <span>Crear Cuenta</span>
           </button>
         </div>
@@ -184,35 +185,35 @@ export default function LoginPage() {
         {/* Main Password Form */}
         <form onSubmit={handlePasswordAuth} className="space-y-4">
           <div>
-            <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
+            <label className="block text-xs text-[#6B605B] mb-1.5 font-bold uppercase tracking-wider">
               CORREO ELECTRÓNICO
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Mail className="w-4 h-4 text-[#9E928C] absolute left-3.5 top-3.5" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@email.com"
-                className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#10B981] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
+                className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#4EBA88] focus:bg-[#FFFFFF] rounded-2xl pl-10 pr-3 py-2.5 text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs text-slate-300 mb-1.5 font-bold uppercase tracking-wider">
+            <label className="block text-xs text-[#6B605B] mb-1.5 font-bold uppercase tracking-wider">
               CONTRASEÑA
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Lock className="w-4 h-4 text-[#9E928C] absolute left-3.5 top-3.5" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#08090C] border border-[#1E2230] focus:border-[#10B981] rounded-lg pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
+                className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#4EBA88] focus:bg-[#FFFFFF] rounded-2xl pl-10 pr-3 py-2.5 text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all"
               />
             </div>
           </div>
@@ -220,7 +221,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-extrabold py-3 px-4 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-[#4EBA88] to-[#3D996E] hover:from-[#5BC996] hover:to-[#4EBA88] text-white font-bold py-3.5 px-4 rounded-2xl shadow-[0_6px_20px_rgba(78,186,136,0.28)] hover:shadow-[0_8px_24px_rgba(78,186,136,0.38)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -230,7 +231,7 @@ export default function LoginPage() {
             ) : (
               <>
                 {isSignUp ? <UserPlus className="w-4 h-4" /> : <KeyRound className="w-4 h-4" />}
-                <span>{isSignUp ? 'CREAR CUENTA CYBER' : 'INICIAR SESIÓN'}</span>
+                <span>{isSignUp ? 'CREAR CUENTA' : 'INICIAR SESIÓN'}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -240,10 +241,10 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#1E2230]" />
+            <div className="w-full border-t border-[#EAE2D8]" />
           </div>
           <div className="relative flex justify-center text-[10px] uppercase">
-            <span className="bg-[#10121A] px-3 text-slate-500 font-semibold tracking-widest">
+            <span className="bg-[#FFFFFF] px-3 text-[#9E928C] font-semibold tracking-widest">
               ACCESO SOCIAL
             </span>
           </div>
@@ -255,11 +256,11 @@ export default function LoginPage() {
           role="button"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && handleSocialComingSoon()}
-          className="group relative rounded-xl border border-dashed border-[#1E2230] hover:border-amber-500/40 bg-[#0A0C12]/70 hover:bg-[#0E111A] p-3.5 text-center transition-all cursor-pointer select-none"
+          className="group relative rounded-2xl border border-dashed border-[#DFD5CA] hover:border-[#EFA93A] bg-[#FAF7F2] hover:bg-[#FFFDF9] p-3.5 text-center transition-all cursor-pointer select-none"
         >
-          <div className="flex items-center justify-center gap-3 mb-2.5 opacity-60 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-center gap-3 mb-2 opacity-70 group-hover:opacity-100 transition-opacity">
             {/* Google Icon */}
-            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center shadow-sm">
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
                 <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z" />
                 <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
@@ -268,24 +269,24 @@ export default function LoginPage() {
               </svg>
             </div>
             {/* GitHub Icon */}
-            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center text-slate-300">
+            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center text-[#282321] shadow-sm">
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
             </div>
             {/* Meta/Facebook Icon */}
-            <div className="w-7 h-7 rounded-lg bg-[#141724] border border-[#23283B] flex items-center justify-center text-[#1877F2]">
+            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center text-[#1877F2] shadow-sm">
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-mono tracking-wider font-semibold">
-            <Sparkles className="w-3 h-3 text-amber-400 shrink-0" />
-            <span>PRÓXIMAMENTE // GOOGLE & SOCIAL</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5DC] border border-[#FFE08A] text-[#B87A00] text-[10px] font-mono tracking-wide font-bold">
+            <Info className="w-3 h-3 text-[#B87A00] shrink-0" />
+            <span>PRÓXIMAMENTE: GOOGLE & REDES SOCIALES</span>
           </div>
-          <p className="text-[10px] text-slate-500 mt-1 font-mono">
+          <p className="text-[10px] text-[#9E928C] mt-1 font-sans">
             Acceso con 1-clic en la próxima actualización
           </p>
         </div>

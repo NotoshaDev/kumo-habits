@@ -49,8 +49,8 @@ const MatrixCell = memo(function MatrixCell({
   return (
     <td
       className={cn(
-        'p-0.5 text-center',
-        isCurrentDay && 'bg-[#1E2230]/40',
+        'p-0.5 text-center transition-colors',
+        isCurrentDay && 'bg-[#FDF6F0]/70',
       )}
     >
       <div className="flex items-center justify-center w-full h-full py-1">
@@ -76,20 +76,20 @@ const HabitNameCell = memo(function HabitNameCell({ habit, consistency }: HabitN
   const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
 
   return (
-    <td className="sticky left-0 z-20 bg-[#10121A] border-r border-[#1E2230] min-w-[180px] max-w-[220px] px-3 py-1.5 group/cell">
+    <td className="sticky left-0 z-20 bg-[#FFFFFF] border-r border-[#EAE2D8] min-w-[180px] max-w-[220px] px-3 py-2 group/cell shadow-xs">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
           <span
-            className="flex items-center justify-center w-7 h-7 rounded-md shrink-0"
-            style={{ backgroundColor: `${habit.color_hex}20`, color: habit.color_hex }}
+            className="flex items-center justify-center w-7 h-7 rounded-xl shrink-0 border border-[#EAE2D8]"
+            style={{ backgroundColor: `${habit.color_hex}18`, color: habit.color_hex }}
           >
             <Icon size={14} />
           </span>
           <div className="flex flex-col min-w-0">
-            <span className="text-[#F1F5F9] text-xs font-medium truncate leading-tight">
+            <span className="text-[#3D2E26] text-xs font-semibold truncate leading-tight">
               {habit.name}
             </span>
-            <span className="font-mono text-[10px] leading-tight" style={{ color: habit.color_hex }}>
+            <span className="font-mono text-[10px] font-bold leading-tight mt-0.5" style={{ color: habit.color_hex }}>
               {consistency}%
             </span>
           </div>
@@ -100,8 +100,8 @@ const HabitNameCell = memo(function HabitNameCell({ habit, consistency }: HabitN
           habit={habit}
           trigger={
             <button
-              className="opacity-0 group-hover/cell:opacity-100 p-1 rounded hover:bg-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] transition-all shrink-0"
-              title="Editar Hábito"
+              className="opacity-0 group-hover/cell:opacity-100 p-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#9E928C] hover:text-[#3D2E26] transition-all shrink-0 cursor-pointer"
+              title="Editar hábito"
             >
               <Pencil size={12} />
             </button>
@@ -156,18 +156,18 @@ export function DesktopMatrixGrid({
   return (
     <div
       ref={scrollRef}
-      className="overflow-x-auto overflow-y-visible scrollbar-thin scrollbar-thumb-[#1E2230] scrollbar-track-transparent"
+      className="overflow-x-auto overflow-y-visible scrollbar-thin scrollbar-thumb-[#E5DCD3] scrollbar-track-transparent p-1"
     >
       <table
-        className="border-collapse table-fixed"
+        className="border-collapse table-fixed bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#EAE2D8] shadow-[0_6px_20px_rgba(78,64,53,0.04)]"
         style={{ minWidth: `${180 + days.length * 42}px` }}
       >
         {/* THEAD — Sticky day headers */}
         <thead>
-          <tr className="border-b border-[#1E2230]">
+          <tr className="border-b border-[#EAE2D8] bg-[#FFFDF9]">
             {/* Sticky corner header */}
-            <th className="sticky left-0 z-30 bg-[#10121A] border-r border-[#1E2230] px-3 py-2 min-w-[180px] max-w-[220px]">
-              <span className="text-[10px] font-mono text-[#64748B] uppercase tracking-widest">
+            <th className="sticky left-0 z-30 bg-[#FAF7F2] border-r border-[#EAE2D8] px-3.5 py-2.5 min-w-[180px] max-w-[220px]">
+              <span className="text-[10px] font-mono text-[#7A6A60] uppercase tracking-wider font-bold">
                 Hábito / Día
               </span>
             </th>
@@ -182,17 +182,13 @@ export function DesktopMatrixGrid({
                 <th
                   key={day}
                   className={cn(
-                    'w-[42px] text-center pb-2 pt-1 font-mono text-[10px] font-medium relative',
-                    todayFlag ? 'text-[#10B981]' : 'text-[#64748B]',
-                    futureFLag && 'opacity-30',
+                    'w-[42px] text-center pb-2 pt-1.5 font-mono text-[11px] font-semibold relative transition-colors',
+                    todayFlag ? 'bg-[#FDF2ED] text-[#C95D47] font-bold' : 'text-[#7A6A60]',
+                    futureFLag && 'opacity-40',
                   )}
                 >
                   {todayFlag && (
-                    <motion.span
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#10B981]"
-                      animate={{ opacity: [1, 0.2, 1] }}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
-                    />
+                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#F28574]" />
                   )}
                   {day}
                 </th>
@@ -207,8 +203,8 @@ export function DesktopMatrixGrid({
             <motion.tr
               key={habit.id}
               className={cn(
-                'border-b border-[#1E2230]/50 group',
-                'hover:bg-[#10121A]/60 transition-colors duration-150',
+                'border-b border-[#EAE2D8] group',
+                'hover:bg-[#FAF7F2]/60 transition-colors duration-150',
               )}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -245,19 +241,19 @@ export function DesktopMatrixGrid({
           ))}
 
           {/* Add Habit Action Row */}
-          <tr className="border-b border-[#1E2230]/30 hover:bg-[#10121A]/40 transition-colors">
-            <td className="sticky left-0 z-20 bg-[#10121A] border-r border-[#1E2230] px-3 py-2">
+          <tr className="border-b border-[#EAE2D8] hover:bg-[#FAF7F2]/50 transition-colors">
+            <td className="sticky left-0 z-20 bg-[#FAF7F2] border-r border-[#EAE2D8] px-3.5 py-2.5">
               <AddHabitModal
                 trigger={
-                  <button className="flex items-center gap-2 text-xs font-mono text-[#10B981] hover:text-[#059669] font-semibold transition-colors">
+                  <button className="flex items-center gap-2 text-xs font-mono text-[#C95D47] hover:text-[#B34732] font-bold transition-colors cursor-pointer">
                     <Plus size={14} className="stroke-[3]" />
                     <span>NUEVO HÁBITO</span>
                   </button>
                 }
               />
             </td>
-            <td colSpan={days.length} className="px-3 py-2 text-[11px] font-mono text-[#475569]">
-              Agrega hábitos ilimitados para monitorear tu disciplina mensual
+            <td colSpan={days.length} className="px-4 py-2.5 text-[11px] font-mono text-[#9E928C]">
+              Monitorea la consistencia de tus hábitos en el mes
             </td>
           </tr>
         </tbody>

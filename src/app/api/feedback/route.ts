@@ -22,14 +22,16 @@ export async function POST(request: Request) {
       )
     }
 
-    const typeIcons: Record<string, string> = {
-      idea: '💡 Sugerencia / Idea',
-      bug: '🐞 Reporte de Error (Bug)',
-      opinion: '💬 Opinión General',
+    const typeLabels: Record<string, string> = {
+      idea: 'Sugerencia / Idea',
+      bug: 'Reporte de Error',
+      opinion: 'Opinión General',
     }
-    const typeLabel = typeIcons[type] || '💬 Comentario'
+    const typeLabel = typeLabels[type] || 'Comentario'
 
-    const stars = rating && rating > 0 ? '⭐'.repeat(Math.min(5, Math.max(1, rating))) : 'Sin calificación'
+    const stars = rating && rating > 0
+      ? `${'★'.repeat(rating)}${'☆'.repeat(5 - rating)} (${rating}/5)`
+      : 'Sin calificación'
 
     // Escape special markdown characters for Telegram Legacy Markdown or clean text
     const cleanMessage = message.trim().replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&')
@@ -44,16 +46,16 @@ export async function POST(request: Request) {
       minute: '2-digit',
     })
 
-    const text = `☁️ *Nuevo Feedback en Kumo Habits*
+    const text = `*Kumo Habits — Nuevo Feedback*
 ━━━━━━━━━━━━━━━━━━━━
-📌 *Tipo:* ${typeLabel}
-👤 *Usuario:* ${cleanEmail}
-⭐ *Valoración:* ${stars}
+*Tipo:* ${typeLabel}
+*Usuario:* ${cleanEmail}
+*Valoración:* ${stars}
 
-📝 *Mensaje:*
+*Mensaje:*
 ${cleanMessage}
 ━━━━━━━━━━━━━━━━━━━━
-🕒 ${now}`
+*Fecha:* ${now}`
 
     const telegramRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
@@ -77,7 +79,7 @@ ${cleanMessage}
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: chatId,
-          text: `☁️ Nuevo Feedback en Kumo Habits:\n\nTipo: ${typeLabel}\nUsuario: ${userEmail || 'Anónimo'}\nValoración: ${stars}\n\nMensaje:\n${message.trim()}`,
+          text: `[Kumo Habits] Nuevo Feedback:\n\nTipo: ${typeLabel}\nUsuario: ${userEmail || 'Anónimo'}\nValoración: ${stars}\n\nMensaje:\n${message.trim()}`,
         }),
       })
     }

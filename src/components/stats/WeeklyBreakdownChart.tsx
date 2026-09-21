@@ -34,32 +34,33 @@ export function WeeklyBreakdownChart({
       <BarChart data={chartData} barSize={20} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
         <XAxis
           dataKey="name"
-          tick={{ fill: '#64748B', fontSize: 10, fontFamily: 'monospace' }}
+          tick={{ fill: '#8C7A70', fontSize: 10, fontFamily: 'monospace' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
           domain={[0, 100]}
-          tick={{ fill: '#64748B', fontSize: 10, fontFamily: 'monospace' }}
+          tick={{ fill: '#8C7A70', fontSize: 10, fontFamily: 'monospace' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => `${v}%`}
         />
         <Tooltip
-          cursor={{ fill: '#1E2230' }}
+          cursor={{ fill: '#FAF7F2' }}
           contentStyle={{
-            backgroundColor: '#10121A',
-            border: `1px solid ${color}44`,
-            borderRadius: 6,
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #EAE2D8',
+            borderRadius: 12,
+            boxShadow: '0 4px 16px rgba(78,64,53,0.08)',
             fontFamily: 'monospace',
             fontSize: 11,
-            color: '#F1F5F9',
+            color: '#3D2E26',
           }}
           formatter={(value, _name, props) => [
             `${value ?? 0}% (${props.payload.completed}/${props.payload.total} días)`,
             '',
           ]}
-          labelStyle={{ color: '#94A3B8' }}
+          labelStyle={{ color: '#8C7A70' }}
         />
         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
           {chartData.map((entry, index) => (

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy, Sparkles, CalendarDays } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy, CalendarDays, MessageSquare, Columns3 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useHabits, useHabitLogs, useToggleHabitLog } from '@/hooks/useHabits'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
@@ -49,13 +49,13 @@ function MonthNavigator({
     <div className="flex items-center gap-3">
       <button
         onClick={onPrev}
-        className="flex items-center justify-center w-7 h-7 rounded-md border border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] hover:border-[#2E3450] transition-all duration-150"
+        className="flex items-center justify-center w-7 h-7 rounded-xl border border-[#EAE2D8] bg-[#FAF7F2] text-[#6B605B] hover:text-[#282321] hover:bg-[#F5EFEB] transition-all duration-150 cursor-pointer"
         aria-label="Mes anterior"
       >
         <ChevronLeft size={14} />
       </button>
 
-      <span className="font-mono text-sm font-medium text-[#F1F5F9] min-w-[160px] text-center">
+      <span className="font-mono text-sm font-bold text-[#282321] min-w-[160px] text-center">
         {formatMonthLabel(year, month)}
       </span>
 
@@ -63,10 +63,10 @@ function MonthNavigator({
         onClick={onNext}
         disabled={isCurrentMonth}
         className={cn(
-          'flex items-center justify-center w-7 h-7 rounded-md border transition-all duration-150',
+          'flex items-center justify-center w-7 h-7 rounded-xl border transition-all duration-150',
           isCurrentMonth
-            ? 'border-[#1E2230] text-[#1E2230] cursor-not-allowed'
-            : 'border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] hover:border-[#2E3450]',
+            ? 'border-[#EAE2D8] text-[#DFD5CA] cursor-not-allowed bg-[#FAF7F2]'
+            : 'border-[#EAE2D8] bg-[#FAF7F2] text-[#6B605B] hover:text-[#282321] hover:bg-[#F5EFEB] cursor-pointer',
         )}
         aria-label="Mes siguiente"
       >
@@ -102,30 +102,29 @@ function DesktopHeader({
   userLevel: number
 }) {
   return (
-    <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#1E2230] bg-[#10121A]/50 backdrop-blur-md shrink-0 relative z-[5000]">
+    <header className="grid grid-cols-3 items-center px-6 py-3 border-b border-[#EAE2D8] bg-[#FFFFFF] shadow-sm shrink-0 relative z-[5000]">
       {/* Brand (Left) */}
       <div className="flex items-center gap-2.5">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+        <div className="flex items-center justify-center w-8 h-8 rounded-2xl bg-gradient-to-br from-[#4EBA88]/20 via-[#F2728C]/20 to-[#EFA93A]/20 border border-[#EAE2D8] shadow-sm">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
             <path
               d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
-              fill="url(#dash-cloud-grad)"
-              opacity="0.95"
+              fill="url(#dash-cloud-cake-grad)"
             />
             <defs>
-              <linearGradient id="dash-cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#10B981" />
-                <stop offset="100%" stopColor="#38BDF8" />
+              <linearGradient id="dash-cloud-cake-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#4EBA88" />
+                <stop offset="100%" stopColor="#F2728C" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         <div>
           <h1 className="font-mono text-sm font-bold leading-none tracking-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#38BDF8]">Kumo</span>
-            <span className="text-[#F1F5F9]"> Habits</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4EBA88] via-[#F2728C] to-[#EFA93A]">Kumo</span>
+            <span className="text-[#282321]"> Habits</span>
           </h1>
-          <p className="font-mono text-[9px] text-[#64748B] leading-none mt-0.5 tracking-[0.15em] uppercase">
+          <p className="font-mono text-[9px] text-[#9E928C] leading-none mt-0.5 tracking-[0.15em] uppercase font-semibold">
             by NotoshaDev
           </p>
         </div>
@@ -142,12 +141,12 @@ function DesktopHeader({
         <button
           onClick={onToggleSound}
           className={cn(
-            'flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-150',
+            'flex items-center justify-center w-8 h-8 rounded-xl border transition-all duration-150 cursor-pointer',
             isMuted
-              ? 'border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] bg-[#08090C]'
-              : 'border-[#10B981]/40 text-[#10B981] bg-[#10B981]/10',
+              ? 'border-[#EAE2D8] text-[#9E928C] hover:text-[#282321] bg-[#FAF7F2]'
+              : 'border-[#4EBA88]/40 text-[#4EBA88] bg-[#EBF7F1]',
           )}
-          title={isMuted ? 'Activar Sonido Retro 8-bit' : 'Silenciar Audio'}
+          title={isMuted ? 'Activar Sonido Teclado Creamy' : 'Silenciar Audio'}
           aria-label="Toggle audio"
         >
           {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
@@ -160,18 +159,32 @@ function DesktopHeader({
           userXP={userXP}
           trigger={
             <button
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B] hover:bg-[#F59E0B]/20 transition-all duration-150"
-              title="Ver Logros y Trofeos"
-              aria-label="Trofeos"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#FFE08A] bg-[#FFF8E6] text-[#B87A00] font-mono text-xs font-bold hover:bg-[#FFF3D1] transition-all cursor-pointer shadow-sm"
+              title="Ver Medallas"
             >
-              <Trophy size={15} />
+              <Trophy size={14} />
+              <span className="hidden sm:inline">NIVEL {userLevel}</span>
             </button>
           }
         />
 
+        {/* Feedback Button */}
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('open-kumo-feedback'))
+            }
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#F28574]/30 bg-[#FDF2ED] text-[#C95D47] font-mono text-xs font-bold hover:bg-[#FBE5DC] transition-all cursor-pointer shadow-sm"
+          title="Dar sugerencia o feedback"
+        >
+          <MessageSquare size={13} className="text-[#F28574]" />
+          <span className="hidden md:inline">FEEDBACK</span>
+        </button>
+
         <AddHabitModal
           trigger={
-            <button className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-black font-mono text-xs font-bold transition-all duration-150 shadow-md shadow-emerald-500/20 active:scale-95">
+            <button className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#F28574] hover:bg-[#E07261] text-white font-mono text-xs font-bold transition-all duration-150 shadow-[0_4px_14px_rgba(242,133,116,0.28)] active:scale-95 cursor-pointer">
               <Plus size={14} className="stroke-[3]" />
               <span>NUEVO HÁBITO</span>
             </button>
@@ -203,10 +216,10 @@ function MobileHeader({
   userLevel: number
 }) {
   return (
-    <header className="flex items-center justify-between px-4 py-2.5 border-b border-[#1E2230] bg-[#10121A]/90 backdrop-blur-md relative z-[5000]">
+    <header className="flex items-center justify-between px-4 py-2.5 border-b border-[#EAE2D8] bg-[#FFFFFF]/95 backdrop-blur-md relative z-[5000]">
       {/* Brand */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#38BDF8]/10 border border-[#10B981]/40 shadow-[0_0_8px_rgba(16,185,129,0.2)]">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-[#F28574]/20 to-[#EFA93A]/20 border border-[#EAE2D8] shadow-sm">
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
             <path
               d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.6 10.5 5.7 10.1C5.3 9.4 5 8.5 5 7.5C5 4.5 7.5 2 10.5 2C13 2 15.1 3.6 15.8 5.9C16.2 5.6 16.8 5.5 17.5 5.5C19.4 5.5 21 7.1 21 9C21 9.3 20.9 9.6 20.8 9.9C22.1 10.5 23 11.8 23 13.5C23 15.9 21 18 18.5 18L6.5 19Z"
@@ -215,18 +228,18 @@ function MobileHeader({
             />
             <defs>
               <linearGradient id="mob-cloud-grad" x1="2" y1="2" x2="23" y2="19" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#10B981" />
-                <stop offset="100%" stopColor="#38BDF8" />
+                <stop offset="0%" stopColor="#F28574" />
+                <stop offset="100%" stopColor="#DDA15E" />
               </linearGradient>
             </defs>
           </svg>
         </div>
         <div className="leading-tight">
           <h1 className="font-mono text-sm font-bold leading-none">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] to-[#38BDF8]">Kumo</span>
-            <span className="text-[#F1F5F9]"> Habits</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F28574] to-[#EFA93A]">Kumo</span>
+            <span className="text-[#3D2E26]"> Habits</span>
           </h1>
-          <p className="font-mono text-[8px] text-[#64748B] tracking-wider uppercase leading-none mt-0.5">by NotoshaDev</p>
+          <p className="font-mono text-[8px] text-[#8C7A70] tracking-wider uppercase leading-none mt-0.5">by NotoshaDev</p>
         </div>
       </div>
 
@@ -237,8 +250,8 @@ function MobileHeader({
           className={cn(
             'flex items-center justify-center w-7 h-7 rounded-lg border transition-colors',
             isMuted
-              ? 'border-[#1E2230] text-[#64748B]'
-              : 'border-[#10B981]/40 text-[#10B981] bg-[#10B981]/10',
+              ? 'border-[#EAE2D8] text-[#9E928C] bg-[#FAF7F2]'
+              : 'border-[#F28574]/40 text-[#F28574] bg-[#FDF2ED]',
           )}
           aria-label="Toggle audio"
         >
@@ -251,7 +264,7 @@ function MobileHeader({
           userXP={userXP}
           trigger={
             <button
-              className="flex items-center justify-center w-7 h-7 rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B]"
+              className="flex items-center justify-center w-7 h-7 rounded-lg border border-[#FFE08A] bg-[#FFF8E6] text-[#B87A00]"
               aria-label="Trofeos"
             >
               <Trophy size={14} />
@@ -262,7 +275,7 @@ function MobileHeader({
         <AddHabitModal
           trigger={
             <button
-              className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#10B981] text-black hover:bg-[#059669] transition-all duration-150 active:scale-95 shadow-sm shadow-emerald-500/20"
+              className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#F28574] text-white hover:bg-[#E07261] transition-all duration-150 active:scale-95 shadow-sm"
               aria-label="Agregar Hábito"
             >
               <Plus size={15} className="stroke-[3]" />
@@ -283,9 +296,9 @@ function LoadingSkeleton() {
     <div className="flex-1 flex flex-col p-6 gap-4 animate-pulse">
       {[...Array(6)].map((_, i) => (
         <div key={i} className="flex gap-3 items-center">
-          <div className="w-44 h-8 bg-[#1E2230] rounded-md" />
+          <div className="w-44 h-8 bg-[#EAE2D8]/70 rounded-xl" />
           {[...Array(20)].map((_, j) => (
-            <div key={j} className="w-8 h-8 bg-[#1E2230] rounded" />
+            <div key={j} className="w-8 h-8 bg-[#EAE2D8]/60 rounded-xl" />
           ))}
         </div>
       ))}
@@ -357,7 +370,7 @@ export function HabitDashboard({
   // Mobile layout
   if (isMobile) {
     return (
-      <div className="flex flex-col h-dvh bg-[#08090C] text-[#F1F5F9]">
+      <div className="flex flex-col h-dvh bg-[#FAF7F2] text-[#3D2E26]">
         <MobileHeader
           isMuted={isMuted}
           onToggleSound={handleToggleSound}
@@ -385,7 +398,7 @@ export function HabitDashboard({
 
   // Desktop layout
   return (
-    <div className="flex flex-col h-screen bg-[#08090C] text-[#F1F5F9] overflow-hidden">
+    <div className="flex flex-col h-screen bg-[#FAF7F2] text-[#282321] overflow-hidden">
       <DesktopHeader
         year={year}
         month={month}
@@ -401,41 +414,41 @@ export function HabitDashboard({
 
       <div className="flex flex-1 gap-0 overflow-hidden">
         {/* Main matrix area */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#08090C]">
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#FAF7F2]">
           {/* View Switcher Sub-header */}
-          <div className="flex items-center justify-between px-4 py-2 border-b border-[#1E2230] bg-[#0A0C12] shrink-0">
-            <div className="flex items-center gap-1.5 p-0.5 bg-[#08090C] rounded-lg border border-[#1E2230]">
+          <div className="flex items-center justify-between px-6 py-2.5 border-b border-[#EAE2D8] bg-[#FFFFFF] shrink-0">
+            <div className="flex items-center gap-1.5 p-1 bg-[#FAF7F2] rounded-2xl border border-[#EAE2D8]">
               <button
                 type="button"
                 onClick={() => setActiveView('aesthetic')}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-semibold transition-all cursor-pointer',
+                  'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer',
                   activeView === 'aesthetic'
-                    ? 'bg-[#1E2230] text-[#10B981] shadow-sm shadow-emerald-500/15'
-                    : 'text-[#64748B] hover:text-slate-200',
+                    ? 'bg-[#FFFFFF] text-[#282321] shadow-sm border border-[#EAE2D8]'
+                    : 'text-[#6B605B] hover:text-[#282321]',
                 )}
               >
-                <Sparkles size={12} className={activeView === 'aesthetic' ? 'text-[#10B981]' : ''} />
-                <span>SEMANA AESTHETIC</span>
+                <Columns3 size={13} className={activeView === 'aesthetic' ? 'text-[#F28574]' : ''} />
+                <span>VISTA SEMANAL</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveView('monthly')}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-semibold transition-all cursor-pointer',
+                  'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer',
                   activeView === 'monthly'
-                    ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm shadow-sky-500/15'
-                    : 'text-[#64748B] hover:text-slate-200',
+                    ? 'bg-[#FFFFFF] text-[#282321] shadow-sm border border-[#EAE2D8]'
+                    : 'text-[#6B605B] hover:text-[#282321]',
                 )}
               >
-                <CalendarDays size={12} className={activeView === 'monthly' ? 'text-[#38BDF8]' : ''} />
+                <CalendarDays size={13} className={activeView === 'monthly' ? 'text-[#DDA15E]' : ''} />
                 <span>MES COMPLETO</span>
               </button>
             </div>
 
-            <span className="text-[10px] font-mono text-[#64748B] hidden sm:inline uppercase tracking-widest">
-              {activeView === 'aesthetic' ? '// VISTA ESTILO SPREADSHEET' : '// MATRIZ DE 31 DÍAS'}
+            <span className="text-[11px] font-mono text-[#9E928C] hidden sm:inline tracking-wider">
+              {activeView === 'aesthetic' ? 'Vista Semanal y Tareas Diarias' : 'Matriz Mensual Completa'}
             </span>
           </div>
 
@@ -444,7 +457,7 @@ export function HabitDashboard({
           ) : (
             <motion.div
               key={activeView}
-              className="flex-1 overflow-auto p-4 space-y-6"
+              className="flex-1 overflow-auto p-5 space-y-6"
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25 }}
@@ -483,7 +496,7 @@ export function HabitDashboard({
         </main>
 
         {/* Right side panel */}
-        <div className="w-80 xl:w-96 border-l border-[#1E2230] overflow-y-auto p-4 shrink-0 bg-[#10121A]/30">
+        <div className="w-80 xl:w-96 border-l border-[#EAE2D8] overflow-y-auto p-4 shrink-0 bg-[#FFFFFF]">
           {!isLoading && (
             <DesktopSidePanel
               habits={habits}

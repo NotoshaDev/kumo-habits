@@ -77,29 +77,29 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
       {/* Trigger Button */}
       <button
         onClick={handleToggleMenu}
-        className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-[#10121A] border border-[#1E2230] hover:border-[#3B82F6]/50 hover:bg-[#161926] transition-all text-xs font-mono text-slate-200 cursor-pointer shadow-sm group whitespace-nowrap"
+        className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] hover:border-[#DFD5CA] hover:bg-[#FAF7F2] transition-all text-xs font-mono text-[#3D2E26] cursor-pointer shadow-xs group whitespace-nowrap"
         aria-label="Menú de perfil"
       >
         {/* Status Dot */}
         <div className="relative flex items-center justify-center">
           <span
-            className={`w-2 h-2 rounded-full ${
-              user ? 'bg-emerald-400 shadow-[0_0_8px_#10B981]' : 'bg-slate-500'
+            className={`w-2 h-2 rounded-full transition-colors ${
+              user ? 'bg-[#F28574] ring-2 ring-[#F28574]/20' : 'bg-[#DFD5CA]'
             }`}
           />
         </div>
 
         {/* User Icon/Avatar */}
-        <div className="w-5 h-5 rounded bg-[#1E2230] border border-[#2E3448] flex items-center justify-center text-[10px] font-bold text-[#10B981] group-hover:text-[#38BDF8] transition-colors">
+        <div className="w-5 h-5 rounded-lg bg-[#FDF2ED] border border-[#F2C4AF] flex items-center justify-center text-[10px] font-bold text-[#C95D47] transition-colors">
           {userInitial}
         </div>
 
         {/* Display Label */}
-        <span className="hidden sm:inline font-semibold tracking-wider text-slate-300">
+        <span className="hidden sm:inline font-semibold tracking-wide text-[#3D2E26]">
           {loading ? 'CARGANDO...' : user ? displayName : 'INVITADO'}
         </span>
 
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 text-[#8C7A70] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Popover Dropdown */}
@@ -110,39 +110,38 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-24px)] rounded-xl border border-[#262B3D] shadow-[0_20px_60px_rgba(0,0,0,0.98)] p-4 z-[5001] text-xs font-mono"
-            style={{ backgroundColor: '#0D0F17' }}
+            className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-24px)] rounded-2xl bg-[#FFFFFF] border border-[#EAE2D8] shadow-[0_16px_50px_rgba(78,64,53,0.14)] p-4 z-[5001] text-xs font-sans text-[#3D2E26]"
           >
             {/* Header info */}
-            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-[#1E2230]">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#10B981]/20 to-[#3B82F6]/20 border border-[#10B981]/40 flex items-center justify-center text-sm font-bold text-[#10B981] shadow-inner">
+            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-[#EAE2D8]">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F28574]/20 to-[#EFA93A]/20 border border-[#F2C4AF] flex items-center justify-center text-sm font-bold text-[#C95D47] shadow-xs">
                 {userInitial}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-100 truncate text-xs">{displayName}</p>
-                <p className="text-[10px] text-slate-400 truncate">{user?.email || 'No autenticado'}</p>
+                <p className="font-bold text-[#3D2E26] truncate text-xs">{displayName}</p>
+                <p className="text-[10px] text-[#8C7A70] truncate">{user?.email || 'No autenticado'}</p>
               </div>
             </div>
 
             {/* Stats Badge */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              <div className="p-2 rounded-md bg-[#141724] border border-[#1E2230] text-center">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest block">NIVEL</span>
-                <span className="text-sm font-bold text-[#10B981]">{level}</span>
+            <div className="grid grid-cols-2 gap-2 mb-3 font-mono">
+              <div className="p-2.5 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] text-center">
+                <span className="text-[9px] text-[#8C7A70] uppercase tracking-wider block font-bold">NIVEL</span>
+                <span className="text-sm font-bold text-[#C95D47]">{level}</span>
               </div>
-              <div className="p-2 rounded-md bg-[#141724] border border-[#1E2230] text-center">
-                <span className="text-[10px] text-slate-400 uppercase tracking-widest block">XP TOTAL</span>
-                <span className="text-sm font-bold text-[#38BDF8]">{xp} XP</span>
+              <div className="p-2.5 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] text-center">
+                <span className="text-[9px] text-[#8C7A70] uppercase tracking-wider block font-bold">XP TOTAL</span>
+                <span className="text-sm font-bold text-[#EFA93A]">{xp} XP</span>
               </div>
             </div>
 
             {/* Connection Status */}
-            <div className="mb-3 p-2 rounded-lg bg-[#10131F] border border-[#1E2230] flex items-center justify-between text-[11px]">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Supabase Sync:</span>
+            <div className="mb-3 p-2.5 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] flex items-center justify-between text-[11px] font-mono">
+              <span className="text-[#8C7A70] flex items-center gap-1.5">
+                <Wifi className="w-3.5 h-3.5 text-[#F28574]" />
+                <span>Estado:</span>
               </span>
-              <span className="font-bold text-emerald-400">
+              <span className="font-bold text-[#C95D47]">
                 {user ? 'EN LÍNEA' : 'DESCONECTADO'}
               </span>
             </div>
@@ -151,7 +150,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
             {user ? (
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-rose-950/40 border border-rose-800/50 hover:bg-rose-900/60 text-rose-300 font-bold transition-all cursor-pointer text-xs group"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-[#FFF0F3] border border-[#FFCCD5] hover:bg-[#FFE5EB] text-[#C93B58] font-bold transition-all cursor-pointer text-xs group"
               >
                 <LogOut className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
                 <span>CERRAR SESIÓN</span>
@@ -159,7 +158,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
             ) : (
               <button
                 onClick={handleLoginRedirect}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#10B981] to-[#059669] hover:from-[#34D399] hover:to-[#10B981] text-slate-950 font-bold shadow-[0_0_12px_rgba(16,185,129,0.3)] transition-all cursor-pointer text-xs group"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#F28574] to-[#E57865] hover:from-[#FA9585] hover:to-[#F28574] text-white font-bold shadow-[0_4px_14px_rgba(242,133,116,0.25)] transition-all cursor-pointer text-xs group"
               >
                 <LogIn className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 <span>INICIAR SESIÓN</span>

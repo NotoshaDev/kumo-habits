@@ -44,8 +44,6 @@ interface WeekSelectorProps {
 }
 
 function WeekSelector({ weeks, selectedWeekIdx, onSelect, year, month }: WeekSelectorProps) {
-  const today = getTodayString()
-
   return (
     <div className="flex gap-2 overflow-x-auto px-4 py-3 scrollbar-none">
       {weeks.map((week, wIdx) => {
@@ -60,18 +58,18 @@ function WeekSelector({ weeks, selectedWeekIdx, onSelect, year, month }: WeekSel
             key={wIdx}
             onClick={() => onSelect(wIdx)}
             className={cn(
-              'flex-none flex flex-col items-center px-4 py-2 rounded-lg border transition-all duration-200',
+              'flex-none flex flex-col items-center px-4 py-2 rounded-2xl border transition-all duration-200 cursor-pointer',
               isSelected
-                ? 'border-[#10B981] bg-[#10B981]/10 text-[#10B981]'
-                : 'border-[#1E2230] bg-[#10121A] text-[#64748B] hover:border-[#2E3450]',
+                ? 'border-[#F28574] bg-[#FDF2ED] text-[#C95D47] shadow-xs font-bold'
+                : 'border-[#EAE2D8] bg-[#FFFFFF] text-[#7A6A60] hover:bg-[#FAF7F2]',
             )}
           >
             <span className="font-mono text-xs font-bold">S{wIdx + 1}</span>
-            <span className="font-mono text-[10px] opacity-70">
+            <span className="font-mono text-[10px] opacity-75 mt-0.5">
               {firstDay}–{lastDay}
             </span>
             {hasToday && (
-              <span className="w-1 h-1 rounded-full bg-[#10B981] mt-0.5" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F28574] mt-1 animate-pulse" />
             )}
           </button>
         )
@@ -99,30 +97,29 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
 
   return (
     <motion.div
-      className="mx-4 mb-3 rounded-xl border bg-[#10121A] overflow-hidden"
-      style={{ borderColor: `${habit.color_hex}33` }}
+      className="mx-4 mb-3.5 rounded-2xl border border-[#EAE2D8] bg-[#FFFFFF] shadow-[0_4px_16px_rgba(78,64,53,0.05)] overflow-hidden"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
       {/* Card header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: `${habit.color_hex}22` }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#EAE2D8] bg-[#FFFDF9]">
         <div className="flex items-center gap-2.5">
           <span
-            className="flex items-center justify-center w-8 h-8 rounded-lg"
-            style={{ backgroundColor: `${habit.color_hex}20`, color: habit.color_hex }}
+            className="flex items-center justify-center w-8 h-8 rounded-xl border border-[#EAE2D8] shadow-xs"
+            style={{ backgroundColor: `${habit.color_hex}15`, color: habit.color_hex }}
           >
             <Icon size={16} />
           </span>
           <div>
-            <p className="text-sm font-semibold text-[#F1F5F9]">{habit.name}</p>
+            <p className="text-sm font-semibold text-[#3D2E26]">{habit.name}</p>
             {habit.category && (
               <HabitColorBadge color={habit.color_hex} label={habit.category} />
             )}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-sm font-bold" style={{ color: habit.color_hex }}>
+          <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[#FAF7F2] border border-[#EAE2D8]" style={{ color: habit.color_hex }}>
             {consistency}%
           </span>
 
@@ -130,7 +127,7 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
             habit={habit}
             trigger={
               <button
-                className="p-1 rounded hover:bg-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] transition-colors"
+                className="p-1.5 rounded-xl hover:bg-[#FAF7F2] text-[#9E928C] hover:text-[#3D2E26] transition-colors cursor-pointer"
                 title="Editar Hábito"
               >
                 <Pencil size={14} />
@@ -141,7 +138,7 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
       </div>
 
       {/* Week day checkboxes */}
-      <div className="flex items-center justify-around px-4 py-3">
+      <div className="flex items-center justify-around px-3 py-3 bg-[#FFFFFF]">
         {validDays.map((day) => {
           const dateStr = toISODateString(year, month, day)
           const completed = logMap[`${habit.id}__${dateStr}`] ?? false
@@ -149,24 +146,26 @@ function HabitCard({ habit, weekDays, logMap, year, month, onToggle, consistency
           const isCurrent = isToday(dateStr)
 
           return (
-            <div key={day} className="flex flex-col items-center gap-1">
+            <div key={day} className="flex flex-col items-center gap-1.5">
               <span
                 className={cn(
-                  'font-mono text-[10px]',
-                  isCurrent ? 'text-[#10B981] font-bold' : 'text-[#64748B]',
-                  isFuture && 'opacity-30',
+                  'font-mono text-[10px] text-center leading-tight',
+                  isCurrent ? 'text-[#C95D47] font-bold' : 'text-[#7A6A60]',
+                  isFuture && 'opacity-40',
                 )}
               >
                 {['D', 'L', 'M', 'M', 'J', 'V', 'S'][new Date(`${dateStr}T00:00:00`).getDay()]}
                 <br />
-                {day}
+                <span className={cn('text-[11px]', isCurrent && 'font-bold underline decoration-[#F28574]')}>
+                  {day}
+                </span>
               </span>
               <PixelCheckbox
                 checked={completed}
                 onChange={() => !isFuture && onToggle(habit.id, dateStr, completed)}
                 color={habit.color_hex}
                 disabled={isFuture}
-                size="md"
+                size="sm"
                 aria-label={`${habit.name} ${dateStr}`}
               />
             </div>
@@ -224,21 +223,21 @@ export function MobileTrackerView({
   ).length
 
   return (
-    <div className="flex flex-col h-full bg-[#08090C]">
+    <div className="flex flex-col h-full bg-[#FAF7F2] text-[#3D2E26]">
       {/* Top bar — month navigator + stats */}
-      <div className="px-4 pt-3 pb-2 border-b border-[#1E2230]">
+      <div className="px-4 pt-3 pb-2.5 border-b border-[#EAE2D8] bg-[#FFFFFF]/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {onPrevMonth && (
               <button
                 onClick={onPrevMonth}
-                className="flex items-center justify-center w-7 h-7 rounded-md border border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] active:bg-[#1E2230] transition-colors"
+                className="flex items-center justify-center w-7 h-7 rounded-xl border border-[#EAE2D8] bg-[#FAF7F2] text-[#7A6A60] hover:text-[#3D2E26] hover:bg-[#F2ECE4] active:scale-95 transition-all cursor-pointer"
                 aria-label="Mes anterior"
               >
                 <ChevronLeft size={14} />
               </button>
             )}
-            <h2 className="font-mono text-xs font-bold text-[#F1F5F9] uppercase tracking-wider">
+            <h2 className="font-mono text-xs font-bold text-[#3D2E26] uppercase tracking-wider">
               {formatMonthLabel(year, month)}
             </h2>
             {onNextMonth && (
@@ -246,10 +245,10 @@ export function MobileTrackerView({
                 onClick={onNextMonth}
                 disabled={isCurrentMonth}
                 className={cn(
-                  'flex items-center justify-center w-7 h-7 rounded-md border transition-colors',
+                  'flex items-center justify-center w-7 h-7 rounded-xl border transition-all',
                   isCurrentMonth
-                    ? 'border-[#1E2230]/40 text-[#1E2230] cursor-not-allowed'
-                    : 'border-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] active:bg-[#1E2230]',
+                    ? 'border-[#EAE2D8]/50 text-[#C4B7AC] bg-[#FAF7F2]/50 cursor-not-allowed'
+                    : 'border-[#EAE2D8] bg-[#FAF7F2] text-[#7A6A60] hover:text-[#3D2E26] hover:bg-[#F2ECE4] active:scale-95 cursor-pointer',
                 )}
                 aria-label="Mes siguiente"
               >
@@ -258,22 +257,22 @@ export function MobileTrackerView({
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[10px] text-[#64748B]">HOY:</span>
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981]">
+            <span className="font-mono text-[10px] text-[#8C7A70] font-medium">HOY:</span>
+            <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FDF2ED] border border-[#F2C4AF] text-[#C95D47] shadow-xs">
               {completedToday}/{habits.length}
             </span>
           </div>
         </div>
 
         {/* Tab switcher */}
-        <div className="flex gap-1 mt-3">
+        <div className="flex p-1 mt-2.5 bg-[#F2ECE4] rounded-xl border border-[#EAE2D8]">
           <button
             onClick={() => setTab('week')}
             className={cn(
-              'flex-1 py-1.5 font-mono text-xs rounded-md border transition-all',
+              'flex-1 py-1.5 font-mono text-xs rounded-lg font-bold transition-all cursor-pointer',
               tab === 'week'
-                ? 'bg-[#10B981]/10 border-[#10B981] text-[#10B981]'
-                : 'bg-transparent border-[#1E2230] text-[#64748B]',
+                ? 'bg-[#FFFFFF] text-[#3D2E26] shadow-xs border border-[#EAE2D8]'
+                : 'text-[#8C7A70] hover:text-[#3D2E26] border border-transparent',
             )}
           >
             Semana
@@ -281,13 +280,13 @@ export function MobileTrackerView({
           <button
             onClick={() => setTab('matrix')}
             className={cn(
-              'flex-1 py-1.5 font-mono text-xs rounded-md border transition-all flex items-center justify-center gap-1.5',
+              'flex-1 py-1.5 font-mono text-xs rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer',
               tab === 'matrix'
-                ? 'bg-[#10B981]/10 border-[#10B981] text-[#10B981]'
-                : 'bg-transparent border-[#1E2230] text-[#64748B]',
+                ? 'bg-[#FFFFFF] text-[#3D2E26] shadow-xs border border-[#EAE2D8]'
+                : 'text-[#8C7A70] hover:text-[#3D2E26] border border-transparent',
             )}
           >
-            <LayoutGrid size={12} />
+            <LayoutGrid size={13} />
             Matriz
           </button>
         </div>
@@ -314,16 +313,16 @@ export function MobileTrackerView({
             />
 
             {/* Habit cards */}
-            <div className="flex-1 overflow-y-auto pb-6">
+            <div className="flex-1 overflow-y-auto pb-8">
               {habits.length === 0 ? (
                 <div className="text-center py-12 px-4">
-                  <p className="text-[#64748B] font-mono text-sm mb-4">
+                  <p className="text-[#8C7A70] font-mono text-sm mb-4">
                     No hay hábitos activos en tu rutina.
                   </p>
                   <AddHabitModal
                     trigger={
-                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#10B981] text-black font-mono text-xs font-bold shadow-lg shadow-emerald-500/20">
-                        <Plus size={16} className="stroke-[3]" />
+                      <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#F28574] to-[#E07261] text-white font-mono text-xs font-bold shadow-md shadow-[#F28574]/20 hover:brightness-105 active:scale-95 cursor-pointer">
+                        <Plus size={16} className="stroke-[2.5]" />
                         <span>CREAR PRIMER HÁBITO</span>
                       </button>
                     }
@@ -344,11 +343,11 @@ export function MobileTrackerView({
                     />
                   ))}
 
-                  <div className="mx-4 mt-2">
+                  <div className="mx-4 mt-2 mb-6">
                     <AddHabitModal
                       trigger={
-                        <button className="w-full py-3.5 px-4 rounded-xl border border-dashed border-[#1E2230] hover:border-[#10B981]/50 bg-[#10121A]/50 hover:bg-[#10121A] text-[#10B981] font-mono text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                          <Plus size={16} className="stroke-[3]" />
+                        <button className="w-full py-3.5 px-4 rounded-2xl border-2 border-dashed border-[#DFD5CA] hover:border-[#F28574] bg-[#FFFFFF] hover:bg-[#FDF2ED] text-[#C95D47] font-mono text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]">
+                          <Plus size={16} className="stroke-[2.5]" />
                           <span>AGREGAR NUEVO HÁBITO</span>
                         </button>
                       }
@@ -367,7 +366,7 @@ export function MobileTrackerView({
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="p-2 pt-3">
+            <div className="p-2 pt-3 pb-8">
               <DesktopMatrixGrid
                 habits={habits}
                 logs={logs}

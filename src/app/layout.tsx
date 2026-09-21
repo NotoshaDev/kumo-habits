@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#08090C',
+  themeColor: '#FAF7F2',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -71,11 +71,11 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${jetbrainsMono.variable} ${outfit.variable} dark`}
+      className={`${jetbrainsMono.variable} ${outfit.variable}`}
       suppressHydrationWarning
     >
       <body
-        className="bg-[#08090C] text-[#F1F5F9] antialiased overflow-hidden"
+        className="bg-[#FAF7F2] text-[#282321] antialiased overflow-hidden selection:bg-[#4EBA88]/25 selection:text-[#282321]"
         suppressHydrationWarning
       >
         <QueryProvider>

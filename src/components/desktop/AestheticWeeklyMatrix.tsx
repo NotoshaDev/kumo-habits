@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Plus, Pencil, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Pencil, LayoutGrid, TrendingUp } from 'lucide-react'
 import { AestheticDonutGauge } from '@/components/ui/AestheticDonutGauge'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { EditHabitModal } from '@/components/ui/EditHabitModal'
@@ -118,18 +118,19 @@ export function AestheticWeeklyMatrix({
   }, [weekDays])
 
   return (
-    <div className="flex flex-col lg:flex-row items-stretch gap-4 w-full">
+    <div className="flex flex-col lg:flex-row items-stretch gap-4 w-full font-sans">
       {/* LEFT: Overall Donut Gauge Card */}
-      <div className="w-full lg:w-[220px] shrink-0 bg-[#10121A] border border-[#1E2230] rounded-xl p-5 flex flex-col items-center justify-between shadow-lg relative overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-full blur-2xl pointer-events-none" />
+      <div className="w-full lg:w-[220px] shrink-0 bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 flex flex-col items-center justify-between shadow-[0_8px_30px_rgba(78,64,53,0.06)] relative overflow-hidden">
+        {/* Soft bakery pastel glow */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#F28574]/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#EFA93A]/10 rounded-full blur-2xl pointer-events-none" />
 
         <div className="text-center w-full mb-2">
-          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#1E2230] text-[#94A3B8] font-mono text-[10px] uppercase tracking-widest mb-1">
-            <Sparkles size={10} className="text-[#10B981]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF7F2] border border-[#EAE2D8] text-[#6B605B] font-mono text-[10px] font-bold uppercase tracking-wider mb-1">
+            <TrendingUp size={11} className="text-[#F28574]" />
             <span>RESUMEN SEMANAL</span>
           </div>
-          <p className="text-[11px] font-mono text-[#64748B]">{weekRangeLabel}</p>
+          <p className="text-[11px] font-mono text-[#9E928C]">{weekRangeLabel}</p>
         </div>
 
         {/* Big Donut */}
@@ -139,16 +140,16 @@ export function AestheticWeeklyMatrix({
             sublabel={`${totalCompleted} / ${totalPossible} completados`}
             size={135}
             strokeWidth={14}
-            color="#10B981"
-            trackColor="#161926"
+            color="#F28574"
+            trackColor="#F2ECE4"
           />
         </div>
 
         {/* Navigation buttons for week */}
-        <div className="flex items-center justify-between w-full pt-2 border-t border-[#1E2230]/60 mt-1">
+        <div className="flex items-center justify-between w-full pt-2.5 border-t border-[#EAE2D8] mt-1">
           <button
             onClick={() => setWeekOffset((prev) => prev - 1)}
-            className="p-1.5 rounded-md hover:bg-[#1E2230] text-[#94A3B8] hover:text-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-[#FAF7F2] text-[#6B605B] hover:text-[#282321] transition-colors cursor-pointer"
             title="Semana anterior"
           >
             <ChevronLeft size={16} />
@@ -158,10 +159,10 @@ export function AestheticWeeklyMatrix({
             onClick={() => setWeekOffset(0)}
             disabled={weekOffset === 0}
             className={cn(
-              'px-2.5 py-1 rounded text-[11px] font-mono font-semibold transition-all cursor-pointer',
+              'px-3 py-1 rounded-xl text-[11px] font-mono font-bold transition-all cursor-pointer',
               weekOffset === 0
-                ? 'bg-[#1E2230]/50 text-[#64748B] cursor-default'
-                : 'bg-[#10B981]/15 text-[#10B981] hover:bg-[#10B981]/25',
+                ? 'bg-[#FAF7F2] text-[#9E928C] cursor-default border border-[#EAE2D8]'
+                : 'bg-[#FDF2ED] text-[#C95D47] border border-[#F2C4AF] hover:bg-[#FBE5DC]',
             )}
           >
             {weekOffset === 0 ? 'Esta Semana' : 'Ir a Hoy'}
@@ -171,10 +172,10 @@ export function AestheticWeeklyMatrix({
             onClick={() => setWeekOffset((prev) => prev + 1)}
             disabled={weekOffset >= 0}
             className={cn(
-              'p-1.5 rounded-md transition-colors',
+              'p-1.5 rounded-xl transition-colors',
               weekOffset >= 0
-                ? 'text-[#2E3450] cursor-not-allowed'
-                : 'hover:bg-[#1E2230] text-[#94A3B8] hover:text-slate-100 cursor-pointer',
+                ? 'text-[#DFD5CA] cursor-not-allowed'
+                : 'hover:bg-[#FAF7F2] text-[#6B605B] hover:text-[#282321] cursor-pointer',
             )}
             title="Semana siguiente"
           >
@@ -184,21 +185,21 @@ export function AestheticWeeklyMatrix({
       </div>
 
       {/* RIGHT: Aesthetic Spreadsheet Habit Table */}
-      <div className="flex-1 bg-[#10121A] border border-[#1E2230] rounded-xl overflow-hidden shadow-lg flex flex-col">
+      <div className="flex-1 bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(78,64,53,0.06)] flex flex-col">
         {/* Spreadsheet Header Bar */}
-        <div className="bg-[#08090C] px-4 py-2.5 border-b border-[#1E2230] flex items-center justify-between">
+        <div className="bg-[#FAF7F2] px-5 py-3 border-b border-[#EAE2D8] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Black solid badge like in the photo */}
-            <div className="bg-[#000000] border border-[#1E2230] px-3 py-1 rounded-md text-slate-100 font-mono font-bold text-xs tracking-wider uppercase shadow-sm">
-              HABIT TRACKER
+            <div className="bg-[#F3E7DC] text-[#4A3B32] border border-[#E5D7CA] px-3.5 py-1 rounded-xl font-bold text-xs tracking-wide shadow-xs flex items-center gap-1.5">
+              <LayoutGrid size={13} className="text-[#C95D47]" />
+              <span>MATRIZ SEMANAL</span>
             </div>
-            <span className="text-xs font-mono text-[#64748B] hidden sm:inline">
-              Matriz Semanal de Disciplina
+            <span className="text-xs text-[#7A6A60] hidden sm:inline font-medium">
+              Seguimiento y progreso de hábitos
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-[#10B981] font-semibold bg-[#10B981]/10 px-2 py-0.5 rounded border border-[#10B981]/20">
+            <span className="text-[11px] font-mono text-[#8C5E48] font-bold bg-[#FCEEE6] px-2.5 py-0.5 rounded-full border border-[#F2C4AF]">
               {habits.length} {habits.length === 1 ? 'HÁBITO' : 'HÁBITOS'}
             </span>
           </div>
@@ -208,9 +209,9 @@ export function AestheticWeeklyMatrix({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b border-[#1E2230] bg-[#0C0E14] text-[11px] font-mono text-[#64748B]">
+              <tr className="border-b border-[#EAE2D8] bg-[#FFFDF9] text-[11px] font-mono text-[#6B605B]">
                 {/* Column: Habit */}
-                <th className="py-2.5 px-4 font-bold uppercase tracking-wider min-w-[200px]">
+                <th className="py-3 px-5 font-bold uppercase tracking-wider min-w-[200px]">
                   Hábito
                 </th>
 
@@ -219,8 +220,8 @@ export function AestheticWeeklyMatrix({
                   <th
                     key={day.dateStr}
                     className={cn(
-                      'py-2 px-1 text-center w-[52px]',
-                      day.isCurrent && 'bg-[#1E2230]/40 text-[#10B981] font-bold',
+                      'py-2 px-1 text-center w-[54px] transition-colors',
+                      day.isCurrent && 'bg-[#FDF2ED] text-[#C95D47] font-bold',
                     )}
                   >
                     <div className="flex flex-col items-center leading-none">
@@ -228,7 +229,7 @@ export function AestheticWeeklyMatrix({
                       <span
                         className={cn(
                           'text-xs font-bold mt-1',
-                          day.isCurrent ? 'text-[#10B981]' : 'text-slate-300',
+                          day.isCurrent ? 'text-[#C95D47]' : 'text-[#3D2E26]',
                           day.isFuture && 'opacity-40',
                         )}
                       >
@@ -239,16 +240,16 @@ export function AestheticWeeklyMatrix({
                 ))}
 
                 {/* Column: Progress Bar */}
-                <th className="py-2.5 px-4 font-bold uppercase tracking-wider min-w-[170px] text-right">
+                <th className="py-3 px-5 font-bold uppercase tracking-wider min-w-[170px] text-right">
                   Progreso
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-[#1E2230]/60 text-xs">
+            <tbody className="divide-y divide-[#EAE2D8] text-xs">
               {habits.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-slate-500 font-mono">
+                  <td colSpan={9} className="py-12 text-center text-[#9E928C] font-mono">
                     No tienes hábitos registrados. Agrega uno nuevo para empezar.
                   </td>
                 </tr>
@@ -264,22 +265,22 @@ export function AestheticWeeklyMatrix({
                   return (
                     <tr
                       key={habit.id}
-                      className="group hover:bg-[#141724]/60 transition-colors duration-100"
+                      className="group hover:bg-[#FAF7F2]/60 transition-colors duration-100"
                     >
                       {/* Habit Name + Icon */}
-                      <td className="py-2 px-4">
+                      <td className="py-2.5 px-5">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2.5 min-w-0">
                             <span
-                              className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                              className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0 shadow-sm border border-[#EAE2D8]"
                               style={{
-                                backgroundColor: `${habit.color_hex}15`,
+                                backgroundColor: `${habit.color_hex}18`,
                                 color: habit.color_hex,
                               }}
                             >
-                              <Icon size={13} />
+                              <Icon size={14} />
                             </span>
-                            <span className="font-medium text-slate-200 truncate group-hover:text-slate-100">
+                            <span className="font-semibold text-[#282321] truncate">
                               {habit.name}
                             </span>
                           </div>
@@ -288,10 +289,10 @@ export function AestheticWeeklyMatrix({
                             habit={habit}
                             trigger={
                               <button
-                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#1E2230] text-[#64748B] hover:text-[#F1F5F9] transition-all shrink-0 cursor-pointer"
+                                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#9E928C] hover:text-[#282321] transition-all shrink-0 cursor-pointer"
                                 title="Editar hábito"
                               >
-                                <Pencil size={11} />
+                                <Pencil size={12} />
                               </button>
                             }
                           />
@@ -307,8 +308,8 @@ export function AestheticWeeklyMatrix({
                           <td
                             key={day.dateStr}
                             className={cn(
-                              'py-1 px-1 text-center align-middle',
-                              day.isCurrent && 'bg-[#1E2230]/20',
+                              'py-1 px-1 text-center align-middle transition-colors',
+                              day.isCurrent && 'bg-[#FDF6F0]/60',
                             )}
                           >
                             <div className="flex items-center justify-center">
@@ -317,11 +318,11 @@ export function AestheticWeeklyMatrix({
                                 disabled={disabled}
                                 onClick={() => !disabled && onToggle(habit.id, day.dateStr, isChecked)}
                                 className={cn(
-                                  'w-5 h-5 rounded border transition-all flex items-center justify-center cursor-pointer select-none',
-                                  disabled && 'cursor-not-allowed opacity-30 border-[#1E2230]',
+                                  'w-5 h-5 rounded-lg border transition-all flex items-center justify-center cursor-pointer select-none active:scale-90',
+                                  disabled && 'cursor-not-allowed opacity-30 border-[#EAE2D8]',
                                   isChecked
-                                    ? 'bg-[#10B981] border-[#10B981] text-slate-950 font-black shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                                    : 'border-[#2A3045] bg-[#0A0C12] hover:border-[#10B981]/60',
+                                    ? 'bg-[#F28574] border-[#F28574] text-white font-black shadow-[0_2px_8px_rgba(242,133,116,0.35)]'
+                                    : 'border-[#DFD5CA] bg-[#FAF7F2] hover:border-[#F28574]',
                                 )}
                                 aria-label={`${habit.name} el ${day.shortLabel} ${day.dayNum}`}
                               >
@@ -345,15 +346,15 @@ export function AestheticWeeklyMatrix({
                       })}
 
                       {/* Progress Bar & Percentage Column */}
-                      <td className="py-2 px-4 text-right">
+                      <td className="py-2.5 px-5 text-right">
                         <div className="flex items-center justify-end gap-3">
-                          {/* Solid horizontal progress bar */}
-                          <div className="w-24 sm:w-28 h-2 bg-[#161926] rounded-full overflow-hidden border border-[#1E2230]">
+                          {/* Creamy horizontal progress bar */}
+                          <div className="w-24 sm:w-28 h-2.5 bg-[#F0EAE1] rounded-full overflow-hidden border border-[#EAE2D8]">
                             <motion.div
                               className="h-full rounded-full"
                               style={{
-                                backgroundColor: habit.color_hex || '#10B981',
-                                boxShadow: `0 0 8px ${habit.color_hex || '#10B981'}66`,
+                                backgroundColor: habit.color_hex || '#4EBA88',
+                                boxShadow: `0 0 8px ${habit.color_hex || '#4EBA88'}44`,
                               }}
                               initial={{ width: 0 }}
                               animate={{ width: `${progress.percent}%` }}
@@ -364,7 +365,7 @@ export function AestheticWeeklyMatrix({
                           {/* Percentage label */}
                           <span
                             className="font-mono font-bold text-xs w-10 text-right shrink-0"
-                            style={{ color: progress.percent > 0 ? habit.color_hex : '#64748B' }}
+                            style={{ color: progress.percent > 0 ? habit.color_hex : '#9E928C' }}
                           >
                             {progress.percent}%
                           </span>
@@ -376,18 +377,18 @@ export function AestheticWeeklyMatrix({
               )}
 
               {/* Bottom Add Habit Row */}
-              <tr className="bg-[#0C0E14]/70 hover:bg-[#0E111A] transition-colors">
-                <td className="py-2.5 px-4">
+              <tr className="bg-[#FAF7F2]/60 hover:bg-[#FAF7F2] transition-colors">
+                <td className="py-3 px-5">
                   <AddHabitModal
                     trigger={
-                      <button className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-[#10B981] hover:text-[#34D399] transition-colors cursor-pointer">
+                      <button className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#4EBA88] hover:text-[#3D996E] transition-colors cursor-pointer">
                         <Plus size={14} className="stroke-[3]" />
                         <span>AGREGAR HÁBITO</span>
                       </button>
                     }
                   />
                 </td>
-                <td colSpan={8} className="py-2.5 px-4 text-right font-mono text-[11px] text-[#475569]">
+                <td colSpan={8} className="py-3 px-5 text-right font-mono text-[11px] text-[#9E928C]">
                   {weekRangeLabel}
                 </td>
               </tr>

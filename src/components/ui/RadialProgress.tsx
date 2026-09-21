@@ -41,14 +41,11 @@ export function RadialProgress({
             tick={false}
           />
           <RadialBar
-            background={{ fill: '#1E2230' }}
+            background={{ fill: '#F0EAE1' }}
             dataKey="value"
             angleAxisId={0}
             fill={color}
             cornerRadius={6}
-            style={{
-              filter: `drop-shadow(0 0 6px ${color}99)`,
-            }}
           />
         </RadialBarChart>
       </ResponsiveContainer>
@@ -57,22 +54,22 @@ export function RadialProgress({
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         {label !== undefined ? (
           <span
-            className="font-mono font-bold leading-none"
-            style={{ color, fontSize: size * 0.2, textShadow: `0 0 8px ${color}88` }}
+            className="font-mono font-bold leading-none text-[#3D2E26]"
+            style={{ fontSize: size * 0.2 }}
           >
             {label}
           </span>
         ) : (
           <span
-            className="font-mono font-bold leading-none"
-            style={{ color, fontSize: size * 0.2, textShadow: `0 0 8px ${color}88` }}
+            className="font-mono font-bold leading-none text-[#3D2E26]"
+            style={{ fontSize: size * 0.2 }}
           >
             {clampedValue}%
           </span>
         )}
         {sublabel && (
           <span
-            className="text-[#94A3B8] font-mono text-center leading-tight mt-0.5"
+            className="text-[#8C7A70] font-mono text-center leading-tight mt-0.5"
             style={{ fontSize: size * 0.1 }}
           >
             {sublabel}

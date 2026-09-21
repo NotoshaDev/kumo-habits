@@ -4,7 +4,6 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { RadialProgress } from '@/components/ui/RadialProgress'
 import { WeeklyBreakdownChart } from '@/components/stats/WeeklyBreakdownChart'
-import { HabitColorBadge } from '@/components/ui/HabitColorBadge'
 import { AchievementsModal } from '@/components/ui/AchievementsModal'
 import type { HabitRow, HabitLogRow, MonthlyGoalRow } from '@/types/database'
 import {
@@ -33,15 +32,27 @@ interface DesktopSidePanelProps {
 
 // ---- Sub-components -----------------------------------------
 
-function XPBar({ xp, level, habits, logs }: { xp: number; level: number; habits: HabitRow[]; logs: HabitLogRow[] }) {
+function XPBar({
+  xp,
+  level,
+  habits,
+  logs,
+}: {
+  xp: number
+  level: number
+  habits: HabitRow[]
+  logs: HabitLogRow[]
+}) {
   const { xpToNextLevel, progress } = getLevelFromXP(xp)
 
   return (
-    <div className="bg-[#10121A] border border-[#1E2230] rounded-xl p-4">
+    <div className="bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-4 shadow-[0_4px_16px_rgba(78,64,53,0.04)] font-sans">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Zap size={14} className="text-[#F59E0B]" style={{ filter: 'drop-shadow(0 0 4px #F59E0B88)' }} />
-          <span className="font-mono text-xs text-[#94A3B8] uppercase tracking-widest">Nivel</span>
+          <Zap size={15} className="text-[#EFA93A]" />
+          <span className="font-mono text-xs font-bold text-[#6B605B] uppercase tracking-wider">
+            Nivel
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <AchievementsModal
@@ -50,7 +61,7 @@ function XPBar({ xp, level, habits, logs }: { xp: number; level: number; habits:
             userXP={xp}
             trigger={
               <button
-                className="flex items-center gap-1 px-2 py-0.5 rounded border border-[#F59E0B]/30 bg-[#F59E0B]/10 text-[#F59E0B] font-mono text-[10px] font-bold hover:bg-[#F59E0B]/20 transition-all"
+                className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg border border-[#FFE08A] bg-[#FFF8E6] text-[#B87A00] font-mono text-[10px] font-bold hover:bg-[#FFF3D1] transition-all cursor-pointer shadow-sm"
                 title="Ver Medallas"
               >
                 <Trophy size={11} />
@@ -58,19 +69,16 @@ function XPBar({ xp, level, habits, logs }: { xp: number; level: number; habits:
               </button>
             }
           />
-          <span className="font-mono text-lg font-bold text-[#F59E0B]" style={{ textShadow: '0 0 8px #F59E0B66' }}>
-            {level}
-          </span>
+          <span className="font-mono text-lg font-bold text-[#EFA93A]">{level}</span>
         </div>
       </div>
 
       {/* XP progress bar */}
-      <div className="h-2 bg-[#1E2230] rounded-full overflow-hidden">
+      <div className="h-2.5 bg-[#F0EAE1] rounded-full overflow-hidden border border-[#EAE2D8]">
         <motion.div
           className="h-full rounded-full"
           style={{
-            background: 'linear-gradient(90deg, #F59E0B, #EC4899)',
-            boxShadow: '0 0 8px #F59E0B88',
+            background: 'linear-gradient(90deg, #EFA93A, #F2728C)',
           }}
           initial={{ width: 0 }}
           animate={{ width: `${progress * 100}%` }}
@@ -78,36 +86,38 @@ function XPBar({ xp, level, habits, logs }: { xp: number; level: number; habits:
         />
       </div>
 
-      <div className="flex justify-between mt-1.5">
-        <span className="font-mono text-[10px] text-[#64748B]">{xp} XP</span>
-        <span className="font-mono text-[10px] text-[#64748B]">{xpToNextLevel} para subir</span>
+      <div className="flex justify-between mt-2">
+        <span className="font-mono text-[11px] text-[#6B605B] font-semibold">{xp} XP</span>
+        <span className="font-mono text-[11px] text-[#9E928C]">{xpToNextLevel} para subir</span>
       </div>
     </div>
   )
 }
 
-function StatCard({ icon: Icon, label, value, color }: {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
   icon: React.ComponentType<{ size?: number; className?: string }>
   label: string
   value: string | number
   color: string
 }) {
   return (
-    <div
-      className="flex items-center gap-3 bg-[#10121A] border rounded-xl p-3"
-      style={{ borderColor: `${color}33` }}
-    >
+    <div className="flex items-center gap-3 bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-3.5 shadow-[0_4px_16px_rgba(78,64,53,0.04)] font-sans">
       <span
-        className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
+        className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0 shadow-sm"
         style={{ backgroundColor: `${color}18`, color }}
       >
         <Icon size={16} />
       </span>
       <div>
-        <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-wide">{label}</p>
-        <p className="font-mono text-base font-bold" style={{ color, textShadow: `0 0 6px ${color}55` }}>
-          {value}
+        <p className="font-mono text-[10px] text-[#9E928C] font-semibold uppercase tracking-wider">
+          {label}
         </p>
+        <p className="font-mono text-base font-bold text-[#282321]">{value}</p>
       </div>
     </div>
   )
@@ -150,79 +160,83 @@ export function DesktopSidePanel({
   const completedGoals = goals.filter((g) => g.completed).length
 
   return (
-    <aside className="w-full flex flex-col gap-4">
+    <aside className="w-full flex flex-col gap-4 font-sans">
       {/* XP / Level */}
       <XPBar xp={userXP} level={userLevel} habits={habits} logs={logs} />
 
       {/* Quick stats */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2.5">
         <StatCard
           icon={Flame}
           label="Racha"
           value={`${longestStreak}d`}
-          color="#EC4899"
+          color="#F2728C"
         />
         <StatCard
           icon={Trophy}
           label="Metas"
           value={`${completedGoals}/${goals.length}`}
-          color="#F59E0B"
+          color="#EFA93A"
         />
       </div>
 
       {/* Radial progress meters */}
-      <div className="bg-[#10121A] border border-[#1E2230] rounded-xl p-4">
-        <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-widest mb-4">
+      <div className="bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-4 shadow-[0_4px_16px_rgba(78,64,53,0.04)]">
+        <p className="font-mono text-[10px] text-[#6B605B] font-bold uppercase tracking-wider mb-3">
           Progreso
         </p>
         <div className="flex items-center justify-around">
-          <div className="flex flex-col items-center gap-2">
-            <RadialProgress value={todayPercent} color="#10B981" size={100} />
-            <span className="font-mono text-[10px] text-[#64748B]">Hoy</span>
+          <div className="flex flex-col items-center gap-1.5">
+            <RadialProgress value={todayPercent} color="#F28574" size={96} strokeWidth={9} />
+            <span className="font-mono text-[11px] font-bold text-[#6B605B]">Hoy</span>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <RadialProgress value={overallPercent} color="#06B6D4" size={100} />
-            <span className="font-mono text-[10px] text-[#64748B]">Mes</span>
+          <div className="flex flex-col items-center gap-1.5">
+            <RadialProgress value={overallPercent} color="#EFA93A" size={96} strokeWidth={9} />
+            <span className="font-mono text-[11px] font-bold text-[#6B605B]">Mes</span>
           </div>
         </div>
       </div>
 
       {/* Weekly breakdown */}
-      <div className="bg-[#10121A] border border-[#1E2230] rounded-xl p-4">
-        <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-widest mb-3">
+      <div className="bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-4 shadow-[0_4px_16px_rgba(78,64,53,0.04)]">
+        <p className="font-mono text-[10px] text-[#6B605B] font-bold uppercase tracking-wider mb-3">
           Por Semana
         </p>
-        <WeeklyBreakdownChart data={weeklyBreakdown} color="#06B6D4" />
+        <WeeklyBreakdownChart data={weeklyBreakdown} color="#F28574" />
       </div>
 
       {/* Per-habit consistency list */}
-      <div className="bg-[#10121A] border border-[#1E2230] rounded-xl p-4">
-        <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-widest mb-3">
+      <div className="bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-4 shadow-[0_4px_16px_rgba(78,64,53,0.04)]">
+        <p className="font-mono text-[10px] text-[#6B605B] font-bold uppercase tracking-wider mb-3">
           Hábitos
         </p>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {habits.map((habit) => {
             const pct = getHabitConsistency(logs, habit.id, year, month)
             const Icon = ICON_MAP[habit.icon_key] ?? ICON_MAP['star']
             return (
               <div key={habit.id} className="flex items-center gap-2">
-                <span style={{ color: habit.color_hex }} className="shrink-0">
-                  <Icon size={12} />
+                <span
+                  style={{ color: habit.color_hex, backgroundColor: `${habit.color_hex}15` }}
+                  className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                >
+                  <Icon size={11} />
                 </span>
-                <span className="text-xs text-[#94A3B8] truncate flex-1">{habit.name}</span>
+                <span className="text-xs font-medium text-[#282321] truncate flex-1">
+                  {habit.name}
+                </span>
                 {/* Mini bar */}
-                <div className="w-16 h-1.5 bg-[#1E2230] rounded-full overflow-hidden shrink-0">
+                <div className="w-16 h-1.5 bg-[#F0EAE1] rounded-full overflow-hidden shrink-0 border border-[#EAE2D8]">
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{
                       width: `${pct}%`,
                       backgroundColor: habit.color_hex,
-                      boxShadow: `0 0 4px ${habit.color_hex}88`,
                     }}
                   />
                 </div>
                 <span
-                  className="font-mono text-[10px] w-8 text-right shrink-0"
+                  className="font-mono text-[10px] font-bold w-8 text-right shrink-0"
                   style={{ color: habit.color_hex }}
                 >
                   {pct}%
@@ -235,10 +249,10 @@ export function DesktopSidePanel({
 
       {/* Monthly goals */}
       {goals.length > 0 && (
-        <div className="bg-[#10121A] border border-[#1E2230] rounded-xl p-4">
+        <div className="bg-[#FFFFFF] border border-[#EAE2D8] rounded-2xl p-4 shadow-[0_4px_16px_rgba(78,64,53,0.04)]">
           <div className="flex items-center gap-2 mb-3">
-            <Target size={12} className="text-[#F59E0B]" />
-            <p className="font-mono text-[10px] text-[#64748B] uppercase tracking-widest">
+            <Target size={13} className="text-[#EFA93A]" />
+            <p className="font-mono text-[10px] text-[#6B605B] font-bold uppercase tracking-wider">
               Objetivos del Mes
             </p>
           </div>
@@ -247,17 +261,22 @@ export function DesktopSidePanel({
               <button
                 key={goal.id}
                 onClick={() => onToggleGoal?.(goal.id, !goal.completed)}
-                className="w-full flex items-center gap-2 text-left group"
+                className="w-full flex items-center gap-2 text-left group cursor-pointer"
               >
                 {goal.completed ? (
-                  <CheckCircle2 size={14} className="text-[#10B981] shrink-0" />
+                  <CheckCircle2 size={15} className="text-[#4EBA88] shrink-0" />
                 ) : (
-                  <Circle size={14} className="text-[#1E2230] group-hover:text-[#2E3450] shrink-0 transition-colors" />
+                  <Circle
+                    size={15}
+                    className="text-[#DFD5CA] group-hover:text-[#4EBA88] shrink-0 transition-colors"
+                  />
                 )}
                 <span
                   className={cn(
                     'text-xs leading-snug transition-colors',
-                    goal.completed ? 'text-[#64748B] line-through' : 'text-[#94A3B8] group-hover:text-[#F1F5F9]',
+                    goal.completed
+                      ? 'text-[#9E928C] line-through'
+                      : 'text-[#282321] group-hover:text-[#4EBA88]',
                   )}
                 >
                   {goal.title}

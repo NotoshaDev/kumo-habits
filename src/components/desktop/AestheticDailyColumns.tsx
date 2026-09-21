@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, CheckSquare, Sparkles } from 'lucide-react'
+import { Calendar, CalendarDays } from 'lucide-react'
 import { AestheticDonutGauge } from '@/components/ui/AestheticDonutGauge'
 import { ICON_MAP } from '@/lib/icon-map'
 import { toISODateString, isToday, getTodayString } from '@/lib/date-utils'
@@ -85,88 +85,96 @@ export function AestheticDailyColumns({
   }, [currentWeekDays, habits, logMap])
 
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-3 font-sans">
       {/* Section Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <div className="bg-[#000000] border border-[#1E2230] px-3 py-1 rounded-md text-slate-100 font-mono font-bold text-xs tracking-wider uppercase shadow-sm">
-            DAILY PLANNER // TASKS
+          <div className="bg-[#F3E7DC] text-[#4A3B32] border border-[#E5D7CA] px-3.5 py-1 rounded-xl font-bold text-xs tracking-wide shadow-xs flex items-center gap-1.5">
+            <CalendarDays size={13} className="text-[#C95D47]" />
+            <span>PLAN DIARIO</span>
           </div>
-          <span className="text-xs font-mono text-[#64748B] hidden sm:inline">
-            Desglose y cumplimiento diario de la semana
+          <span className="text-xs text-[#7A6A60] hidden sm:inline font-medium">
+            Cumplimiento y tareas diarias de la semana
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs font-mono text-[#94A3B8]">
-          <Calendar size={13} className="text-[#10B981]" />
+        <div className="flex items-center gap-1.5 text-xs font-mono text-[#6B605B] font-semibold bg-[#FFFFFF] px-3 py-1 rounded-xl border border-[#EAE2D8]">
+          <Calendar size={13} className="text-[#F28574]" />
           <span>7 Días de la Semana</span>
         </div>
       </div>
 
-      {/* Grid of Daily Cards (Horizontal scroll or responsive grid) */}
+      {/* Grid of Daily Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3.5 items-start">
-        {dailyStats.map((day, idx) => (
+        {dailyStats.map((day) => (
           <div
             key={day.dateStr}
             className={cn(
-              'bg-[#10121A] border rounded-xl overflow-hidden shadow-lg flex flex-col transition-all duration-200',
+              'bg-[#FFFFFF] border rounded-3xl overflow-hidden shadow-[0_6px_20px_rgba(78,64,53,0.05)] flex flex-col transition-all duration-200',
               day.isCurrent
-                ? 'border-[#10B981]/50 shadow-[0_0_20px_rgba(16,185,129,0.12)] ring-1 ring-[#10B981]/30'
-                : 'border-[#1E2230] hover:border-[#2E3450]',
+                ? 'border-[#F28574] shadow-[0_8px_30px_rgba(242,133,116,0.16)] ring-2 ring-[#F28574]/20'
+                : 'border-[#EAE2D8] hover:border-[#DFD5CA] hover:shadow-md',
               day.isFuture && 'opacity-60',
             )}
           >
-            {/* Top Day Header Banner (Black solid block like photo) */}
+            {/* Top Day Header Banner */}
             <div
               className={cn(
                 'py-2.5 px-3 text-center border-b transition-colors',
                 day.isCurrent
-                  ? 'bg-[#000000] border-[#10B981]/40'
-                  : 'bg-[#08090C] border-[#1E2230]',
+                  ? 'bg-gradient-to-b from-[#FDF3EB] to-[#F8E8DA] border-[#EED7C5]'
+                  : 'bg-[#FAF7F2] border-[#EAE2D8]',
               )}
             >
               <div className="flex items-center justify-center gap-1.5">
                 <span
                   className={cn(
-                    'font-mono font-bold text-sm tracking-tight',
-                    day.isCurrent ? 'text-[#10B981]' : 'text-slate-100',
+                    'font-bold text-sm tracking-tight',
+                    day.isCurrent ? 'text-[#C95D47]' : 'text-[#3D2E26]',
                   )}
                 >
                   {day.dayName}
                 </span>
                 {day.isCurrent && (
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+                  <span className="inline-block w-2 h-2 rounded-full bg-[#F28574] ring-2 ring-[#F28574]/30 animate-pulse" />
                 )}
               </div>
-              <p className="text-[10px] font-mono text-[#64748B] mt-0.5">{day.formattedDate}</p>
+              <p
+                className={cn(
+                  'text-[10px] font-mono mt-0.5',
+                  day.isCurrent ? 'text-[#9C6856] font-medium' : 'text-[#9E928C]',
+                )}
+              >
+                {day.formattedDate}
+              </p>
             </div>
 
             {/* Circular Gauge Centerpiece */}
-            <div className="py-4 flex flex-col items-center justify-center bg-[#0C0E14]/40 border-b border-[#1E2230]/60">
+            <div className="py-4 flex flex-col items-center justify-center bg-[#FFFDF9] border-b border-[#EAE2D8]">
               <AestheticDonutGauge
                 percentage={day.percent}
                 size={88}
                 strokeWidth={9}
-                color={day.percent === 100 ? '#10B981' : '#38BDF8'}
-                trackColor="#161926"
+                color={day.percent === 100 ? '#F28574' : '#E89874'}
+                trackColor="#F2ECE4"
                 sublabel={`${day.completed}/${day.total}`}
               />
             </div>
 
             {/* Tasks Section Header Banner */}
-            <div className="bg-[#08090C] px-3 py-1.5 border-b border-[#1E2230] flex items-center justify-between">
-              <span className="font-mono text-[10px] font-bold tracking-wider text-slate-300 uppercase">
-                TASKS
+            <div className="bg-[#FAF7F2] px-3.5 py-1.5 border-b border-[#EAE2D8] flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider text-[#7A6A60] uppercase">
+                Tareas
               </span>
-              <span className="font-mono text-[9px] text-[#64748B]">
+              <span className="font-mono text-[9px] text-[#9E928C] font-semibold">
                 {day.completed}/{day.total}
               </span>
             </div>
 
             {/* Tasks Checklist */}
-            <div className="p-2 space-y-1.5 min-h-[140px] max-h-[260px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#1E2230]">
+            <div className="p-2 space-y-1.5 min-h-[140px] max-h-[260px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#E5DCD3]">
               {habits.length === 0 ? (
-                <p className="text-[11px] font-mono text-slate-500 text-center py-6">
+                <p className="text-[11px] font-mono text-[#9E928C] text-center py-6">
                   Sin hábitos
                 </p>
               ) : (
@@ -180,44 +188,44 @@ export function AestheticDailyColumns({
                       key={habit.id}
                       onClick={() => !disabled && onToggle(habit.id, day.dateStr, isChecked)}
                       className={cn(
-                        'group flex items-center justify-between gap-2 p-1.5 rounded-lg border transition-all select-none',
+                        'group flex items-center justify-between gap-2 p-1.5 rounded-xl border transition-all select-none',
                         disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer',
                         isChecked
-                          ? 'bg-[#10B981]/8 border-[#10B981]/25 text-slate-400'
-                          : 'bg-[#141724]/40 border-[#1E2230]/60 hover:bg-[#141724] hover:border-[#2E3450] text-slate-200',
+                          ? 'bg-[#FDF2ED] border-[#F28574]/30 text-[#8C7A70]'
+                          : 'bg-[#FAF7F2] border-[#EAE2D8] hover:bg-[#F5EFEB] hover:border-[#DFD5CA] text-[#3D2E26]',
                       )}
                     >
                       {/* Left: icon + name */}
                       <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <span
-                          className="w-4 h-4 rounded flex items-center justify-center shrink-0 text-[10px]"
+                          className="w-4 h-4 rounded-md flex items-center justify-center shrink-0 text-[10px]"
                           style={{
                             color: habit.color_hex,
-                            backgroundColor: `${habit.color_hex}15`,
+                            backgroundColor: `${habit.color_hex}18`,
                           }}
                         >
                           <Icon size={10} />
                         </span>
                         <span
                           className={cn(
-                            'text-[11px] font-mono truncate leading-tight transition-all',
-                            isChecked && 'line-through text-slate-400 opacity-60',
+                            'text-[11px] truncate leading-tight transition-all font-medium',
+                            isChecked && 'line-through text-[#9E928C] opacity-70',
                           )}
                         >
                           {habit.name}
                         </span>
                       </div>
 
-                      {/* Right: Checkbox like in reference image */}
+                      {/* Right: Checkbox with creamy feel */}
                       <button
                         type="button"
                         disabled={disabled}
                         tabIndex={-1}
                         className={cn(
-                          'w-4 h-4 rounded-[3px] border transition-all flex items-center justify-center shrink-0',
+                          'w-4 h-4 rounded-md border transition-all flex items-center justify-center shrink-0',
                           isChecked
-                            ? 'bg-[#10B981] border-[#10B981] text-slate-950 font-black'
-                            : 'border-[#2A3045] bg-[#08090C] group-hover:border-[#10B981]/60',
+                            ? 'bg-[#F28574] border-[#F28574] text-white font-black shadow-[0_2px_6px_rgba(242,133,116,0.35)]'
+                            : 'border-[#DFD5CA] bg-[#FFFFFF] group-hover:border-[#F28574]',
                         )}
                         aria-label={`${habit.name} - ${day.dayName}`}
                       >

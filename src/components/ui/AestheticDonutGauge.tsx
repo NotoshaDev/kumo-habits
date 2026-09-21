@@ -28,8 +28,8 @@ export function AestheticDonutGauge({
   sublabel,
   size = 130,
   strokeWidth = 14,
-  color = '#10B981',
-  trackColor = '#161926',
+  color = '#F28574',
+  trackColor = '#F2ECE4',
   className = '',
 }: AestheticDonutGaugeProps) {
   const clamped = Math.min(100, Math.max(0, Math.round(percentage)))
@@ -72,7 +72,7 @@ export function AestheticDonutGauge({
           animate={{ strokeDashoffset }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            filter: `drop-shadow(0 0 6px ${color}55)`,
+            filter: `drop-shadow(0 0 6px ${color}33)`,
           }}
         />
       </svg>
@@ -84,7 +84,7 @@ export function AestheticDonutGauge({
           initial={{ scale: 0.9, opacity: 0.6 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.2 }}
-          className="font-mono font-black text-slate-100 leading-none tracking-tight"
+          className="font-mono font-black text-[#3D2E26] leading-none tracking-tight"
           style={{ fontSize: Math.max(13, size * 0.22) }}
         >
           {centerLabel ?? `${clamped}%`}
@@ -92,7 +92,7 @@ export function AestheticDonutGauge({
 
         {sublabel && (
           <span
-            className="text-slate-400 font-mono tracking-tight font-medium mt-1 leading-tight line-clamp-2 px-1"
+            className="text-[#8C7A70] font-mono tracking-tight font-medium mt-1 leading-tight line-clamp-2 px-1"
             style={{ fontSize: Math.max(9, size * 0.085) }}
           >
             {sublabel}

@@ -36,7 +36,7 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="fixed inset-0 bg-[#08090C]/80 backdrop-blur-md z-50"
+                className="fixed inset-0 bg-[#28201A]/45 backdrop-blur-sm z-50"
               />
             </Dialog.Overlay>
 
@@ -47,19 +47,19 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg max-h-[85vh] overflow-y-auto bg-[#10121A] border border-[#1E2230] rounded-2xl p-6 shadow-2xl shadow-amber-950/20 z-50 focus:outline-none"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg max-h-[85vh] overflow-y-auto bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-6 shadow-[0_20px_60px_rgba(78,64,53,0.18)] z-50 focus:outline-none text-[#3D2E26] font-sans"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-[#1E2230] pb-4 mb-5">
+                <div className="flex items-center justify-between border-b border-[#EAE2D8] pb-4 mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#F59E0B]/15 border border-[#F59E0B]/30 flex items-center justify-center">
-                      <Trophy size={18} className="text-[#F59E0B]" style={{ filter: 'drop-shadow(0 0 6px #F59E0B)' }} />
+                    <div className="w-9 h-9 rounded-xl bg-[#FFF8E6] border border-[#FFE08A] flex items-center justify-center text-[#B87A00] shadow-xs">
+                      <Trophy size={18} />
                     </div>
                     <div>
-                      <Dialog.Title className="font-mono text-base font-bold text-[#F1F5F9] tracking-wide">
+                      <Dialog.Title className="font-mono text-base font-bold text-[#3D2E26] tracking-wide">
                         LOGROS & MEDALLAS
                       </Dialog.Title>
-                      <Dialog.Description className="text-xs text-[#64748B]">
+                      <Dialog.Description className="text-xs text-[#8C7A70]">
                         {unlockedCount} de {achievements.length} trofeos desbloqueados
                       </Dialog.Description>
                     </div>
@@ -67,7 +67,7 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
 
                   <Dialog.Close asChild>
                     <button
-                      className="p-1.5 rounded-lg text-[#64748B] hover:text-[#F1F5F9] hover:bg-[#1E2230] transition-colors"
+                      className="p-1.5 rounded-xl text-[#9E928C] hover:text-[#3D2E26] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
                       aria-label="Cerrar"
                     >
                       <X size={18} />
@@ -76,18 +76,18 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                 </div>
 
                 {/* Overall Progress */}
-                <div className="mb-5 p-3.5 rounded-xl bg-[#08090C] border border-[#1E2230]">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-mono text-xs text-[#94A3B8] uppercase tracking-wider">
+                <div className="mb-5 p-3.5 rounded-2xl bg-[#FAF7F2] border border-[#EAE2D8]">
+                  <div className="flex justify-between items-center mb-2 font-mono">
+                    <span className="text-xs font-bold text-[#7A6A60] uppercase tracking-wider">
                       Progreso de Trofeos
                     </span>
-                    <span className="font-mono text-xs font-bold text-[#F59E0B]">
+                    <span className="text-xs font-bold text-[#B87A00]">
                       {Math.round((unlockedCount / achievements.length) * 100)}%
                     </span>
                   </div>
-                  <div className="h-2 bg-[#1E2230] rounded-full overflow-hidden">
+                  <div className="h-2.5 bg-[#F0EAE1] rounded-full overflow-hidden border border-[#EAE2D8]">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#F59E0B] to-[#EC4899] transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-[#EFA93A] to-[#F2728C] transition-all duration-500"
                       style={{ width: `${(unlockedCount / achievements.length) * 100}%` }}
                     />
                   </div>
@@ -102,20 +102,19 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                       <div
                         key={item.id}
                         className={cn(
-                          'p-4 rounded-xl border transition-all duration-200 flex items-start gap-3.5',
+                          'p-4 rounded-2xl border transition-all duration-200 flex items-start gap-3.5',
                           item.unlocked
-                            ? 'bg-[#08090C] border-[#1E2230] hover:border-[#2E3450]'
-                            : 'bg-[#08090C]/50 border-[#1E2230]/50 opacity-60',
+                            ? 'bg-[#FFFFFF] border-[#EAE2D8] hover:border-[#DFD5CA] shadow-xs'
+                            : 'bg-[#FAF7F2] border-[#EAE2D8]/60 opacity-60',
                         )}
                       >
                         {/* Icon Badge */}
                         <div
-                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border mt-0.5"
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border mt-0.5 shadow-xs"
                           style={{
-                            backgroundColor: item.unlocked ? `${item.colorHex}15` : '#1E223040',
-                            borderColor: item.unlocked ? `${item.colorHex}40` : '#1E2230',
-                            color: item.unlocked ? item.colorHex : '#475569',
-                            boxShadow: item.unlocked ? `0 0 10px ${item.colorHex}33` : 'none',
+                            backgroundColor: item.unlocked ? `${item.colorHex}15` : '#FAF7F2',
+                            borderColor: item.unlocked ? `${item.colorHex}40` : '#EAE2D8',
+                            color: item.unlocked ? item.colorHex : '#9E928C',
                           }}
                         >
                           {item.unlocked ? <IconComponent size={20} /> : <Lock size={18} />}
@@ -124,13 +123,13 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                         {/* Details */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-mono text-xs font-bold text-[#F1F5F9] truncate">
+                            <h4 className="font-mono text-xs font-bold text-[#3D2E26] truncate">
                               {item.title}
                             </h4>
                             <span
-                              className="font-mono text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 flex items-center gap-1"
+                              className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-md border shrink-0 flex items-center gap-1"
                               style={{
-                                backgroundColor: `${item.colorHex}10`,
+                                backgroundColor: `${item.colorHex}12`,
                                 color: item.colorHex,
                                 borderColor: `${item.colorHex}30`,
                               }}
@@ -139,14 +138,14 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                             </span>
                           </div>
 
-                          <p className="text-xs text-[#64748B] mt-1 leading-snug">
+                          <p className="text-xs text-[#8C7A70] mt-1 leading-relaxed">
                             {item.description}
                           </p>
 
-                          {/* Progress bar if locked */}
+                          {/* Progress bar inside card if locked */}
                           {!item.unlocked && (
                             <div className="mt-2.5">
-                              <div className="h-1.5 bg-[#1E2230] rounded-full overflow-hidden">
+                              <div className="h-1.5 bg-[#F0EAE1] rounded-full overflow-hidden">
                                 <div
                                   className="h-full rounded-full transition-all duration-300"
                                   style={{
