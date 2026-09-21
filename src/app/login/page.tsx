@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, Terminal, KeyRound, UserPlus, Loader2, Sparkles } from 'lucide-react'
+import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, KeyRound, UserPlus, Loader2, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
@@ -117,14 +117,8 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* System badge */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#10B981]/8 border border-[#10B981]/20 text-[#10B981]/80 text-[10px] font-mono mb-2 tracking-widest">
-            <Terminal className="w-2.5 h-2.5" />
-            <span>ACCESO AL SISTEMA // v1.0</span>
-          </div>
-
-          <p className="text-[11px] text-slate-400 mt-1">
-            {isSignUp ? 'Crea tu cuenta para comenzar a sincronizar tus hábitos.' : 'Ingresa tus credenciales para sincronizar tu matriz de disciplina.'}
+          <p className="text-xs text-slate-300/90 mt-3 font-mono leading-relaxed max-w-sm mx-auto">
+            Esto es una prueba piloto, cualquier sugerencia o mejora me ayudaria mucho!
           </p>
         </div>
 
