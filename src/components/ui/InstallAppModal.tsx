@@ -81,7 +81,7 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild>
               <motion.div
-                className="fixed inset-0 bg-[#28201A]/45 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-[#28201A]/45 backdrop-blur-sm z-[9998]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -95,7 +95,7 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md max-h-[85dvh] flex flex-col bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 sm:p-6 shadow-[0_16px_50px_rgba(78,64,53,0.18)] font-sans text-[#3D2E26] focus:outline-none overflow-hidden"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md max-h-[85dvh] flex flex-col bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 sm:p-6 shadow-[0_16px_50px_rgba(78,64,53,0.18)] font-sans text-[#3D2E26] focus:outline-none overflow-hidden"
               >
                 {/* Modal Header */}
                 <div className="flex items-start justify-between pb-3 mb-3 border-b border-[#EAE2D8] shrink-0">
@@ -312,7 +312,6 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
 
 export function InstallAppBanner() {
   const [show, setShow] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -330,47 +329,49 @@ export function InstallAppBanner() {
 
   const handleDismiss = (e: React.MouseEvent) => {
     e.stopPropagation()
+    e.preventDefault()
     setShow(false)
     localStorage.setItem('kumo_install_banner_dismissed', 'true')
   }
 
   return (
-    <>
-      <div
-        onClick={() => setModalOpen(true)}
-        className="mx-4 mt-1 mb-3.5 p-3 rounded-2xl bg-[#FFFFFF] border border-[#F2C4AF] shadow-[0_4px_16px_rgba(78,64,53,0.05)] flex items-center justify-between cursor-pointer hover:bg-[#FDF2ED]/50 transition-all group"
-      >
-        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-          <div className="w-8 h-8 rounded-xl bg-[#FDF2ED] border border-[#F2C4AF] flex items-center justify-center text-[#C95D47] shrink-0">
-            <Smartphone size={16} />
+    <InstallAppModal
+      trigger={
+        <div
+          role="button"
+          tabIndex={0}
+          className="mx-4 mt-1 mb-3.5 p-3 rounded-2xl bg-[#FFFFFF] border border-[#F2C4AF] shadow-[0_4px_16px_rgba(78,64,53,0.05)] flex items-center justify-between cursor-pointer hover:bg-[#FDF2ED]/50 transition-all group"
+        >
+          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+            <div className="w-8 h-8 rounded-xl bg-[#FDF2ED] border border-[#F2C4AF] flex items-center justify-center text-[#C95D47] shrink-0">
+              <Smartphone size={16} />
+            </div>
+            <div className="min-w-0 text-left">
+              <p className="text-xs font-bold text-[#3D2E26] flex items-center gap-1.5">
+                <span>¿Instalar como App?</span>
+                <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-1.5 py-0.5 rounded-md border border-[#F2C4AF]">PWA</span>
+              </p>
+              <p className="text-[10px] text-[#8C7A70] truncate">
+                Ver cómo agregarla a tu pantalla de inicio
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-xs font-bold text-[#3D2E26] flex items-center gap-1.5">
-              <span>¿Instalar como App?</span>
-              <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-1.5 py-0.5 rounded-md border border-[#F2C4AF]">PWA</span>
-            </p>
-            <p className="text-[10px] text-[#8C7A70] truncate">
-              Ver cómo agregarla a tu pantalla de inicio
-            </p>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] font-bold text-[#C95D47] group-hover:underline">
+              Ver pasos
+            </span>
+            <button
+              type="button"
+              onClick={handleDismiss}
+              className="p-1 rounded-lg text-[#A59990] hover:text-[#3D2E26] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+              title="Ocultar"
+            >
+              <X size={14} />
+            </button>
           </div>
         </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[11px] font-bold text-[#C95D47] group-hover:underline">
-            Ver pasos
-          </span>
-          <button
-            type="button"
-            onClick={handleDismiss}
-            className="p-1 rounded-lg text-[#A59990] hover:text-[#3D2E26] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
-            title="Ocultar"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      </div>
-
-      <InstallAppModal isOpen={modalOpen} onOpenChange={setModalOpen} />
-    </>
+      }
+    />
   )
 }

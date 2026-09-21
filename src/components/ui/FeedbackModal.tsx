@@ -94,7 +94,7 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild>
               <motion.div
-                className="fixed inset-0 bg-[#282321]/40 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-[#282321]/40 backdrop-blur-sm z-[9998]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -108,7 +108,7 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md max-h-[85dvh] flex flex-col bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 sm:p-6 shadow-[0_16px_50px_rgba(78,64,53,0.18)] font-sans text-[#282321] focus:outline-none overflow-hidden"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[calc(100%-2rem)] max-w-md max-h-[85dvh] flex flex-col bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 sm:p-6 shadow-[0_16px_50px_rgba(78,64,53,0.18)] font-sans text-[#282321] focus:outline-none overflow-hidden"
               >
                 {/* Header */}
                 <div className="flex items-start justify-between pb-3 mb-3 border-b border-[#EAE2D8] shrink-0">

@@ -36,7 +36,7 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="fixed inset-0 bg-[#28201A]/45 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-[#28201A]/45 backdrop-blur-sm z-[9998]"
               />
             </Dialog.Overlay>
 
@@ -44,10 +44,10 @@ export function AchievementsModal({ habits, logs, userXP = 0, trigger }: Achieve
             <Dialog.Content asChild>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg max-h-[85vh] overflow-y-auto bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-6 shadow-[0_20px_60px_rgba(78,64,53,0.18)] z-50 focus:outline-none text-[#3D2E26] font-sans"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-lg max-h-[85vh] overflow-y-auto bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-6 shadow-[0_20px_60px_rgba(78,64,53,0.18)] z-[9999] focus:outline-none text-[#3D2E26] font-sans"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-[#EAE2D8] pb-4 mb-5">

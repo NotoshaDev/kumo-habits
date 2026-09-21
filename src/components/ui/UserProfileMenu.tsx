@@ -153,6 +153,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
                 trigger={
                   <button
                     type="button"
+                    onClick={() => setIsOpen(false)}
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] hover:bg-[#F2ECE4] hover:border-[#DFD5CA] text-[#3D2E26] font-medium transition-all cursor-pointer text-xs group"
                   >
                     <div className="flex items-center gap-2">
