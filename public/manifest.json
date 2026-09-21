@@ -1,14 +1,14 @@
 {
   "name": "Kumo Habits",
   "short_name": "Kumo",
-  "description": "Habit Tracker gamificado estilo Cyberpunk by NotoshaDev",
+  "description": "Habit Tracker estético y minimalista estilo Cake & Cream by NotoshaDev",
   "start_url": "/dashboard",
   "id": "/dashboard",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#08090C",
-  "theme_color": "#10B981",
+  "background_color": "#FAF7F2",
+  "theme_color": "#FAF7F2",
   "orientation": "portrait-primary",
   "lang": "es",
   "icons": [

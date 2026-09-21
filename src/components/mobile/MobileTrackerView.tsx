@@ -7,6 +7,7 @@ import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
 import { HabitColorBadge } from '@/components/ui/HabitColorBadge'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { EditHabitModal } from '@/components/ui/EditHabitModal'
+import { InstallAppBanner } from '@/components/ui/InstallAppModal'
 import type { HabitRow, HabitLogRow } from '@/types/database'
 import {
   getMonthDays,
@@ -313,7 +314,10 @@ export function MobileTrackerView({
             />
 
             {/* Habit cards */}
-            <div className="flex-1 overflow-y-auto pb-8">
+            <div className="flex-1 overflow-y-auto pb-28 sm:pb-12">
+              {/* Install PWA Guide Banner */}
+              <InstallAppBanner />
+
               {habits.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <p className="text-[#8C7A70] font-mono text-sm mb-4">

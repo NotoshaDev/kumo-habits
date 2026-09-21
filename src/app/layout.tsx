@@ -35,19 +35,20 @@ export const metadata: Metadata = {
       { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
       { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
     title: 'Kumo Habits',
   },
   openGraph: {
     type: 'website',
     locale: 'es_ES',
-    title: 'Kumo Habits — Habit Tracker Gamificado',
-    description: 'Rastrea tus hábitos con estética retro arcade/cyberpunk. by NotoshaDev.',
+    title: 'Kumo Habits — Habit Tracker',
+    description: 'Rastrea tus hábitos diarios con estética suave y minimalista Cake & Cream. by NotoshaDev.',
     siteName: 'Kumo Habits',
   },
 }

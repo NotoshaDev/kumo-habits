@@ -77,14 +77,14 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
         {trigger ?? (
           <button
             type="button"
-            className="fixed bottom-5 right-5 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#FFFFFF] hover:bg-[#FAF7F2] border border-[#EAE2D8] hover:border-[#F28574] text-[#282321] text-xs font-mono font-bold shadow-[0_6px_20px_rgba(78,64,53,0.12)] transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+            className="fixed bottom-5 right-4 sm:right-6 z-40 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-[#FFFFFF]/95 backdrop-blur-md hover:bg-[#FAF7F2] border border-[#EAE2D8] hover:border-[#F28574] text-[#3D2E26] text-[11px] sm:text-xs font-mono font-bold shadow-[0_4px_16px_rgba(78,64,53,0.12)] transition-all hover:scale-105 active:scale-95 cursor-pointer group"
           >
             <MessageSquareHeart
-              size={16}
-              className="text-[#F28574] group-hover:rotate-12 transition-transform"
+              size={15}
+              className="text-[#F28574] group-hover:rotate-12 transition-transform shrink-0"
             />
             <span>Feedback</span>
-            <span className="w-2 h-2 rounded-full bg-[#F28574] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#F28574] animate-pulse" />
           </button>
         )}
       </Dialog.Trigger>
