@@ -2,11 +2,13 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Volume2, VolumeX, Trophy, Sparkles, CalendarDays } from 'lucide-react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useHabits, useHabitLogs, useToggleHabitLog } from '@/hooks/useHabits'
 import { DesktopMatrixGrid } from '@/components/desktop/DesktopMatrixGrid'
 import { DesktopSidePanel } from '@/components/desktop/DesktopSidePanel'
+import { AestheticWeeklyMatrix } from '@/components/desktop/AestheticWeeklyMatrix'
+import { AestheticDailyColumns } from '@/components/desktop/AestheticDailyColumns'
 import { MobileTrackerView } from '@/components/mobile/MobileTrackerView'
 import { AddHabitModal } from '@/components/ui/AddHabitModal'
 import { AchievementsModal } from '@/components/ui/AchievementsModal'
@@ -304,6 +306,7 @@ export function HabitDashboard({
   const [year, setYear] = useState(initialYear ?? now.getFullYear())
   const [month, setMonth] = useState(initialMonth ?? now.getMonth() + 1)
   const [isMuted, setIsMuted] = useState(() => retroAudio.isMuted())
+  const [activeView, setActiveView] = useState<'aesthetic' | 'monthly'>('aesthetic')
 
   const isMobile = useIsMobile()
 
@@ -398,23 +401,83 @@ export function HabitDashboard({
 
       <div className="flex flex-1 gap-0 overflow-hidden">
         {/* Main matrix area */}
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#08090C]">
+          {/* View Switcher Sub-header */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-[#1E2230] bg-[#0A0C12] shrink-0">
+            <div className="flex items-center gap-1.5 p-0.5 bg-[#08090C] rounded-lg border border-[#1E2230]">
+              <button
+                type="button"
+                onClick={() => setActiveView('aesthetic')}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-semibold transition-all cursor-pointer',
+                  activeView === 'aesthetic'
+                    ? 'bg-[#1E2230] text-[#10B981] shadow-sm shadow-emerald-500/15'
+                    : 'text-[#64748B] hover:text-slate-200',
+                )}
+              >
+                <Sparkles size={12} className={activeView === 'aesthetic' ? 'text-[#10B981]' : ''} />
+                <span>SEMANA AESTHETIC</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveView('monthly')}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono font-semibold transition-all cursor-pointer',
+                  activeView === 'monthly'
+                    ? 'bg-[#1E2230] text-[#38BDF8] shadow-sm shadow-sky-500/15'
+                    : 'text-[#64748B] hover:text-slate-200',
+                )}
+              >
+                <CalendarDays size={12} className={activeView === 'monthly' ? 'text-[#38BDF8]' : ''} />
+                <span>MES COMPLETO</span>
+              </button>
+            </div>
+
+            <span className="text-[10px] font-mono text-[#64748B] hidden sm:inline uppercase tracking-widest">
+              {activeView === 'aesthetic' ? '// VISTA ESTILO SPREADSHEET' : '// MATRIZ DE 31 DÍAS'}
+            </span>
+          </div>
+
           {isLoading ? (
             <LoadingSkeleton />
           ) : (
             <motion.div
-              className="flex-1 overflow-auto p-4 pt-3"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              key={activeView}
+              className="flex-1 overflow-auto p-4 space-y-6"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
             >
-              <DesktopMatrixGrid
-                habits={habits}
-                logs={logs}
-                year={year}
-                month={month}
-                onToggle={handleToggle}
-              />
+              {activeView === 'aesthetic' ? (
+                <div className="space-y-6 max-w-[1600px] mx-auto pb-8">
+                  {/* Top: Donut Gauge + Spreadsheet Weekly Matrix */}
+                  <AestheticWeeklyMatrix
+                    habits={habits}
+                    logs={logs}
+                    year={year}
+                    month={month}
+                    onToggle={handleToggle}
+                  />
+
+                  {/* Bottom: Daily Cards Breakdown & Tasks */}
+                  <AestheticDailyColumns
+                    habits={habits}
+                    logs={logs}
+                    year={year}
+                    month={month}
+                    onToggle={handleToggle}
+                  />
+                </div>
+              ) : (
+                <DesktopMatrixGrid
+                  habits={habits}
+                  logs={logs}
+                  year={year}
+                  month={month}
+                  onToggle={handleToggle}
+                />
+              )}
             </motion.div>
           )}
         </main>
