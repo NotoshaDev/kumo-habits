@@ -8,11 +8,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  Sparkles,
-  Send,
   X,
   ShieldCheck,
-  Smartphone,
   Info,
 } from 'lucide-react'
 import { useNotificationReminder } from '@/hooks/useNotificationReminder'
@@ -57,18 +54,12 @@ export function NotificationSettingsModal({
   }
 
   const {
-    isSupported,
     permission,
     settings,
-    isTesting,
     updateSettings,
     enableNotifications,
     disableNotifications,
-    triggerTestNotification,
   } = useNotificationReminder()
-
-  const [testSent, setTestSent] = useState(false)
-  const [countdown, setCountdown] = useState<number | null>(null)
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && isGhostEvent()) return
@@ -76,8 +67,6 @@ export function NotificationSettingsModal({
       retroAudio.playCheck()
     } else {
       retroAudio.playUncheck()
-      setTestSent(false)
-      setCountdown(null)
     }
 
     if (isControlled && onOpenChange) {
@@ -96,29 +85,6 @@ export function NotificationSettingsModal({
       if (ok) {
         retroAudio.playAchievement()
       }
-    }
-  }
-
-  const handleRunTest = async () => {
-    if (isTesting || countdown !== null) return
-    retroAudio.playCheck()
-    setCountdown(3)
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(timer)
-          return null
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    const ok = await triggerTestNotification(3)
-    if (ok) {
-      retroAudio.playAchievement()
-      setTestSent(true)
-      setTimeout(() => setTestSent(false), 8000)
     }
   }
 
@@ -322,50 +288,6 @@ export function NotificationSettingsModal({
                       </motion.div>
                     )}
 
-                    {/* Live Mobile Test Button */}
-                    <div className="p-4 rounded-2xl bg-gradient-to-br from-[#FFF8E6] to-[#FFFDF9] border border-[#FFE08A] shadow-2xs space-y-2.5">
-                      <div className="flex items-center gap-2">
-                        <Sparkles size={15} className="text-[#B87A00]" />
-                        <span className="font-bold text-xs text-[#B87A00]">
-                          Prueba Inmediata en tu Teléfono
-                        </span>
-                      </div>
-
-                      <p className="text-[11px] text-[#7A5800] leading-snug">
-                        Presiona el botón. Tendrás 3 segundos para minimizar la app o apagar tu pantalla y comprobar la llegada de la notificación.
-                      </p>
-
-                      <button
-                        type="button"
-                        onClick={handleRunTest}
-                        disabled={isTesting || countdown !== null}
-                        className={cn(
-                          'w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-mono text-xs font-bold transition-all shadow-xs cursor-pointer',
-                          countdown !== null
-                            ? 'bg-[#EFA93A] text-white animate-pulse'
-                            : testSent
-                              ? 'bg-[#4EBA88] text-white'
-                              : 'bg-gradient-to-r from-[#F28574] to-[#E57865] hover:from-[#FA9585] hover:to-[#F28574] text-white shadow-[0_4px_14px_rgba(242,133,116,0.25)] active:scale-98',
-                        )}
-                      >
-                        {countdown !== null ? (
-                          <>
-                            <Clock size={14} className="animate-spin" />
-                            <span>ENVIANDO EN {countdown}s... (¡MINIMIZA LA APP!)</span>
-                          </>
-                        ) : testSent ? (
-                          <>
-                            <CheckCircle2 size={14} />
-                            <span>¡NOTIFICACIÓN ENVIADA AL DISPOSITIVO!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Send size={14} />
-                            <span>🔔 PROBAR NOTIFICACIÓN AHORA</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
 
                     {/* iOS Note */}
                     <div className="flex items-start gap-2 p-3 rounded-xl bg-[#F2ECE4]/60 border border-[#EAE2D8] text-[11px] text-[#8C7A70]">
