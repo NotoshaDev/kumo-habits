@@ -104,37 +104,37 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
 
             <Dialog.Content asChild>
               <motion.div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-6 shadow-[0_16px_50px_rgba(78,64,53,0.16)] font-sans text-[#282321] selection:bg-[#F28574]/25 selection:text-[#282321]"
-                initial={{ opacity: 0, scale: 0.94, y: '-48%' }}
-                animate={{ opacity: 1, scale: 1, y: '-50%' }}
-                exit={{ opacity: 0, scale: 0.94, y: '-48%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md max-h-[85dvh] flex flex-col bg-[#FFFFFF] border border-[#EAE2D8] rounded-3xl p-5 sm:p-6 shadow-[0_16px_50px_rgba(78,64,53,0.18)] font-sans text-[#282321] focus:outline-none overflow-hidden"
               >
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <Dialog.Title className="text-base font-bold flex items-center gap-2 text-[#282321]">
-                      <MessageSquareHeart size={18} className="text-[#F28574]" />
+                <div className="flex items-start justify-between pb-3 mb-3 border-b border-[#EAE2D8] shrink-0">
+                  <div className="pr-2">
+                    <Dialog.Title className="text-sm sm:text-base font-bold flex items-center gap-2 text-[#282321]">
+                      <MessageSquareHeart size={18} className="text-[#F28574] shrink-0" />
                       <span>Sugerencias & Feedback</span>
                     </Dialog.Title>
-                    <Dialog.Description className="text-xs text-[#6B605B] mt-1 leading-relaxed">
+                    <Dialog.Description className="text-[11px] sm:text-xs text-[#6B605B] mt-0.5 leading-relaxed">
                       Tu opinión me ayuda a mejorar Kumo Habits. Llega directo a mi Telegram.
                     </Dialog.Description>
                   </div>
 
                   <Dialog.Close asChild>
                     <button
-                      className="p-1.5 rounded-xl text-[#9E928C] hover:text-[#282321] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                      className="p-1.5 rounded-xl text-[#9E928C] hover:text-[#282321] hover:bg-[#FAF7F2] transition-colors cursor-pointer shrink-0 -mr-1 -mt-1"
                       aria-label="Cerrar"
                     >
-                      <X size={16} />
+                      <X size={18} />
                     </button>
                   </Dialog.Close>
                 </div>
 
                 {submitted ? (
                   /* Success State */
-                  <div className="py-8 text-center flex flex-col items-center">
+                  <div className="py-6 sm:py-8 text-center flex flex-col items-center overflow-y-auto">
                     <div className="w-14 h-14 rounded-2xl bg-[#FDF2ED] border border-[#F28574]/30 flex items-center justify-center mb-4 text-[#F28574]">
                       <CheckCircle2 size={32} />
                     </div>
@@ -154,10 +154,10 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                   </div>
                 ) : (
                   /* Form State */
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 overflow-y-auto pr-1 pb-1 scrollbar-thin">
                     {/* Feedback Type Selector */}
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-2">
+                      <label className="block text-[10px] sm:text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-1.5">
                         Tipo de comentario
                       </label>
                       <div className="grid grid-cols-3 gap-2 text-xs">
@@ -168,13 +168,13 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                             setType('idea')
                           }}
                           className={cn(
-                            'flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-2xl border transition-all cursor-pointer',
+                            'flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer',
                             type === 'idea'
                               ? 'bg-[#EBF7F1] border-[#4EBA88] text-[#246348] font-bold shadow-sm'
                               : 'bg-[#FAF7F2] border-[#EAE2D8] text-[#6B605B] hover:text-[#282321]',
                           )}
                         >
-                          <Lightbulb size={16} />
+                          <Lightbulb size={15} />
                           <span className="text-[10px]">Idea</span>
                         </button>
 
@@ -185,14 +185,14 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                             setType('bug')
                           }}
                           className={cn(
-                            'flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-2xl border transition-all cursor-pointer',
+                            'flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer',
                             type === 'bug'
                               ? 'bg-[#FDF0F2] border-[#F2728C] text-[#A62742] font-bold shadow-sm'
                               : 'bg-[#FAF7F2] border-[#EAE2D8] text-[#6B605B] hover:text-[#282321]',
                           )}
                         >
-                          <Bug size={16} />
-                          <span className="text-[10px]">Bug / Error</span>
+                          <Bug size={15} />
+                          <span className="text-[10px]">Error</span>
                         </button>
 
                         <button
@@ -202,13 +202,13 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                             setType('opinion')
                           }}
                           className={cn(
-                            'flex flex-col items-center justify-center gap-1.5 p-2.5 rounded-2xl border transition-all cursor-pointer',
+                            'flex flex-col items-center justify-center gap-1 p-2 sm:p-2.5 rounded-2xl border transition-all cursor-pointer',
                             type === 'opinion'
                               ? 'bg-[#F0F7FA] border-[#56B4D3] text-[#206D85] font-bold shadow-sm'
                               : 'bg-[#FAF7F2] border-[#EAE2D8] text-[#6B605B] hover:text-[#282321]',
                           )}
                         >
-                          <MessageCircle size={16} />
+                          <MessageCircle size={15} />
                           <span className="text-[10px]">Opinión</span>
                         </button>
                       </div>
@@ -216,8 +216,8 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
 
                     {/* Star Rating */}
                     <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[11px] font-bold text-[#6B605B] uppercase tracking-wider">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] sm:text-[11px] font-bold text-[#6B605B] uppercase tracking-wider">
                           ¿Qué tal la experiencia?
                         </label>
                         <span className="text-[11px] font-mono text-[#EFA93A] font-bold">
@@ -233,7 +233,7 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                               retroAudio.playCheck()
                               setRating(star)
                             }}
-                            className="p-1 rounded transition-transform hover:scale-110 cursor-pointer"
+                            className="p-1 rounded transition-transform hover:scale-110 active:scale-95 cursor-pointer"
                           >
                             <Star
                               size={20}
@@ -251,30 +251,30 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
 
                     {/* Message Area */}
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-1.5">
+                      <label className="block text-[10px] sm:text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-1">
                         Tu Mensaje
                       </label>
                       <textarea
                         required
-                        rows={4}
+                        rows={3}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder="Escribe aquí cualquier sugerencia, qué te gustaría ver, o qué podemos mejorar..."
-                        className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#F28574] focus:bg-[#FFFFFF] rounded-2xl p-3 text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all resize-none leading-relaxed"
+                        className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#F28574] focus:bg-[#FFFFFF] rounded-2xl p-3 text-sm sm:text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all resize-none leading-relaxed"
                       />
                     </div>
 
                     {/* Optional Contact Email */}
                     <div>
-                      <label className="block text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-1.5">
-                        Tu correo o apodo <span className="text-[#9E928C] lowercase">(opcional)</span>
+                      <label className="block text-[10px] sm:text-[11px] font-bold text-[#6B605B] uppercase tracking-wider mb-1">
+                        Tu correo o apodo <span className="text-[#9E928C] lowercase font-normal">(opcional)</span>
                       </label>
                       <input
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="ejemplo@correo.com o tu apodo"
-                        className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#F28574] focus:bg-[#FFFFFF] rounded-2xl px-3.5 py-2.5 text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all"
+                        className="w-full bg-[#FAF7F2] border border-[#EAE2D8] focus:border-[#F28574] focus:bg-[#FFFFFF] rounded-2xl px-3.5 py-2 text-sm sm:text-xs text-[#282321] placeholder-[#A59990] focus:outline-none transition-all"
                       />
                     </div>
 
@@ -286,7 +286,7 @@ export function FeedbackModal({ trigger }: FeedbackModalProps) {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-gradient-to-r from-[#F28574] to-[#E57865] hover:from-[#FA9585] hover:to-[#F28574] text-white font-bold py-3.5 px-4 rounded-2xl shadow-[0_6px_20px_rgba(242,133,116,0.28)] hover:shadow-[0_8px_24px_rgba(242,133,116,0.38)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
+                      className="w-full bg-gradient-to-r from-[#F28574] to-[#E57865] hover:from-[#FA9585] hover:to-[#F28574] text-white font-bold py-3 sm:py-3.5 px-4 rounded-2xl shadow-[0_6px_20px_rgba(242,133,116,0.28)] hover:shadow-[0_8px_24px_rgba(242,133,116,0.38)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50 active:scale-[0.99]"
                     >
                       {loading ? (
                         <>
