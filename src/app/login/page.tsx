@@ -103,12 +103,26 @@ export default function LoginPage() {
     }
   }
 
-  const handleSocialComingSoon = () => {
-    retroAudio.playUncheck()
-    setMessage({
-      type: 'error',
-      text: 'Acceso con Google y redes sociales en desarrollo. Por favor ingresa con correo y contraseña.',
+  const [googleLoading, setGoogleLoading] = useState(false)
+
+  const handleGoogleAuth = async () => {
+    retroAudio.playCheck()
+    setGoogleLoading(true)
+    setMessage(null)
+
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     })
+
+    if (error) {
+      retroAudio.playUncheck()
+      setMessage({ type: 'error', text: error.message })
+      setGoogleLoading(false)
+    }
   }
 
   if (checkingAuth) {
@@ -233,6 +247,43 @@ export default function LoginPage() {
           </button>
         </div>
 
+        {/* Google 1-Click Auth Button */}
+        <button
+          type="button"
+          onClick={handleGoogleAuth}
+          disabled={googleLoading || loading}
+          className="w-full mb-5 flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border border-[#EAE2D8] bg-[#FFFFFF] hover:bg-[#FAF7F2] hover:border-[#DFD5CA] text-[#282321] font-bold text-xs shadow-xs hover:shadow-sm transition-all duration-150 active:scale-98 cursor-pointer disabled:opacity-60"
+        >
+          {googleLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-[#F28574]" />
+              <span>CONECTANDO CON GOOGLE...</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z" />
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
+                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 14.5s.7 4.8 1.9 7.2l3.7-2.9z" />
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z" />
+              </svg>
+              <span>CONTINUAR CON GOOGLE</span>
+            </>
+          )}
+        </button>
+
+        {/* Divider */}
+        <div className="relative mb-5">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#EAE2D8]" />
+          </div>
+          <div className="relative flex justify-center text-[10px] uppercase">
+            <span className="bg-[#FFFFFF] px-3 text-[#9E928C] font-semibold tracking-widest font-mono">
+              O CON TU CORREO
+            </span>
+          </div>
+        </div>
+
         {/* Main Password Form */}
         <form onSubmit={handlePasswordAuth} className="space-y-4">
           <div>
@@ -271,7 +322,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || googleLoading}
             className="w-full bg-gradient-to-r from-[#4EBA88] to-[#3D996E] hover:from-[#5BC996] hover:to-[#4EBA88] text-white font-bold py-3.5 px-4 rounded-2xl shadow-[0_6px_20px_rgba(78,186,136,0.28)] hover:shadow-[0_8px_24px_rgba(78,186,136,0.38)] transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
           >
             {loading ? (
@@ -289,57 +340,13 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#EAE2D8]" />
+        {/* Footer info */}
+        <div className="mt-6 pt-4 border-t border-[#EAE2D8] flex items-center justify-between text-[10px] text-[#9E928C]">
+          <span className="font-mono">Kumo Habits v1.0</span>
+          <div className="flex items-center gap-3">
+            <a href="/privacy" className="hover:text-[#3D2E26] underline transition-colors">Privacidad</a>
+            <a href="/terms" className="hover:text-[#3D2E26] underline transition-colors">Términos</a>
           </div>
-          <div className="relative flex justify-center text-[10px] uppercase">
-            <span className="bg-[#FFFFFF] px-3 text-[#9E928C] font-semibold tracking-widest">
-              ACCESO SOCIAL
-            </span>
-          </div>
-        </div>
-
-        {/* Coming Soon Social Card */}
-        <div
-          onClick={handleSocialComingSoon}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleSocialComingSoon()}
-          className="group relative rounded-2xl border border-dashed border-[#DFD5CA] hover:border-[#EFA93A] bg-[#FAF7F2] hover:bg-[#FFFDF9] p-3.5 text-center transition-all cursor-pointer select-none"
-        >
-          <div className="flex items-center justify-center gap-3 mb-2 opacity-70 group-hover:opacity-100 transition-opacity">
-            {/* Google Icon */}
-            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center shadow-sm">
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z" />
-                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
-                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 14.5s.7 4.8 1.9 7.2l3.7-2.9z" />
-                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z" />
-              </svg>
-            </div>
-            {/* GitHub Icon */}
-            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center text-[#282321] shadow-sm">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-              </svg>
-            </div>
-            {/* Meta/Facebook Icon */}
-            <div className="w-7 h-7 rounded-xl bg-[#FFFFFF] border border-[#EAE2D8] flex items-center justify-center text-[#1877F2] shadow-sm">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF5DC] border border-[#FFE08A] text-[#B87A00] text-[10px] font-mono tracking-wide font-bold">
-            <Info className="w-3 h-3 text-[#B87A00] shrink-0" />
-            <span>PRÓXIMAMENTE: GOOGLE & REDES SOCIALES</span>
-          </div>
-          <p className="text-[10px] text-[#9E928C] mt-1 font-sans">
-            Acceso con 1-clic en la próxima actualización
-          </p>
         </div>
       </motion.div>
     </div>
