@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -27,6 +27,22 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
   const isControlled = controlledOpen !== undefined
   const open = isControlled ? controlledOpen : internalOpen
 
+  const prevOpenRef = useRef<boolean>(false)
+  const openTimestampRef = useRef<number>(0)
+
+  // Synchronously update openTimestampRef during render so it is available before any event can fire
+  if (open && !prevOpenRef.current) {
+    openTimestampRef.current = Date.now()
+  } else if (!open && prevOpenRef.current) {
+    openTimestampRef.current = 0
+  }
+  prevOpenRef.current = open
+
+  const isGhostEvent = () => {
+    if (openTimestampRef.current === 0) return true
+    return Date.now() - openTimestampRef.current < 500
+  }
+
   const [platform, setPlatform] = useState<'ios' | 'android'>('ios')
   const [isStandalone, setIsStandalone] = useState(false)
 
@@ -52,11 +68,29 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
   const handleOpenChange = (newOpen: boolean) => {
     if (newOpen) {
       retroAudio.playCheck()
-    }
-    if (isControlled) {
-      onOpenChange?.(newOpen)
+      if (isControlled) {
+        onOpenChange?.(true)
+      } else {
+        setInternalOpen(true)
+      }
     } else {
-      setInternalOpen(newOpen)
+      // Guard against ghost tap / touch / blur events right after opening
+      if (isGhostEvent()) {
+        return
+      }
+      if (isControlled) {
+        onOpenChange?.(false)
+      } else {
+        setInternalOpen(false)
+      }
+    }
+  }
+
+  const handleExplicitClose = () => {
+    if (isControlled) {
+      onOpenChange?.(false)
+    } else {
+      setInternalOpen(false)
     }
   }
 
@@ -86,10 +120,30 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
+                onClick={(e) => {
+                  if (e.target === e.currentTarget && !isGhostEvent()) {
+                    handleExplicitClose()
+                  }
+                }}
               />
             </Dialog.Overlay>
 
-            <Dialog.Content asChild>
+            <Dialog.Content
+              asChild
+              onPointerDownOutside={(e) => {
+                if (isGhostEvent()) {
+                  e.preventDefault()
+                }
+              }}
+              onInteractOutside={(e) => {
+                if (isGhostEvent()) {
+                  e.preventDefault()
+                }
+              }}
+              onFocusOutside={(e) => {
+                e.preventDefault()
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -295,7 +349,7 @@ export function InstallAppModal({ trigger, isOpen: controlledOpen, onOpenChange 
                   {/* Close button */}
                   <button
                     type="button"
-                    onClick={() => handleOpenChange(false)}
+                    onClick={handleExplicitClose}
                     className="w-full mt-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-[#F28574] to-[#E57865] hover:from-[#FA9585] hover:to-[#F28574] text-white font-bold text-xs uppercase tracking-wider shadow-[0_6px_20px_rgba(242,133,116,0.28)] transition-all cursor-pointer active:scale-[0.99]"
                   >
                     ¡Entendido!
@@ -315,10 +369,15 @@ export function InstallAppBanner() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      try {
+        // Clear permanent localStorage flag so users who accidentally closed it can see it again
+        localStorage.removeItem('kumo_install_banner_dismissed')
+      } catch {}
+
       const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone === true
-      const dismissed = localStorage.getItem('kumo_install_banner_dismissed') === 'true'
+      const dismissed = sessionStorage.getItem('kumo_install_banner_dismissed') === 'true'
       if (!isStandalone && !dismissed) {
         setShow(true)
       }
@@ -331,7 +390,9 @@ export function InstallAppBanner() {
     e.stopPropagation()
     e.preventDefault()
     setShow(false)
-    localStorage.setItem('kumo_install_banner_dismissed', 'true')
+    try {
+      sessionStorage.setItem('kumo_install_banner_dismissed', 'true')
+    } catch {}
   }
 
   return (
@@ -340,6 +401,7 @@ export function InstallAppBanner() {
         <div
           role="button"
           tabIndex={0}
+          data-modal-trigger="true"
           className="mx-4 mt-1 mb-3.5 p-3 rounded-2xl bg-[#FFFFFF] border border-[#F2C4AF] shadow-[0_4px_16px_rgba(78,64,53,0.05)] flex items-center justify-between cursor-pointer hover:bg-[#FDF2ED]/50 transition-all group"
         >
           <div className="flex items-center gap-2.5 min-w-0 pr-2">

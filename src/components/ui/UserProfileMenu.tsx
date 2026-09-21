@@ -19,6 +19,7 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
+  const [showInstallModal, setShowInstallModal] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -149,21 +150,22 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
 
             {/* Install in Phone Option */}
             <div className="mb-3">
-              <InstallAppModal
-                trigger={
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] hover:bg-[#F2ECE4] hover:border-[#DFD5CA] text-[#3D2E26] font-medium transition-all cursor-pointer text-xs group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Smartphone className="w-3.5 h-3.5 text-[#F28574]" />
-                      <span>Instalar en tu Celular</span>
-                    </div>
-                    <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-1.5 py-0.5 rounded-md border border-[#F2C4AF]">APP</span>
-                  </button>
-                }
-              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setIsOpen(false)
+                  setShowInstallModal(true)
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#FAF7F2] border border-[#EAE2D8] hover:bg-[#F2ECE4] hover:border-[#DFD5CA] text-[#3D2E26] font-medium transition-all cursor-pointer text-xs group"
+              >
+                <div className="flex items-center gap-2">
+                  <Smartphone className="w-3.5 h-3.5 text-[#F28574]" />
+                  <span>Instalar en tu Celular</span>
+                </div>
+                <span className="text-[9px] font-mono font-bold text-[#C95D47] bg-[#FDF2ED] px-1.5 py-0.5 rounded-md border border-[#F2C4AF]">APP</span>
+              </button>
             </div>
 
             {/* Actions */}
@@ -187,6 +189,12 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Install App Modal — placed outside the dropdown so closing the dropdown doesn't unmount it */}
+      <InstallAppModal
+        isOpen={showInstallModal}
+        onOpenChange={setShowInstallModal}
+      />
     </div>
   )
 }
