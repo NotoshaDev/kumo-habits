@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, KeyRound, UserPlus, Loader2, Info, Heart } from 'lucide-react'
+import { Mail, Lock, ArrowRight, KeyRound, UserPlus, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { retroAudio } from '@/lib/sound-effects'
 
