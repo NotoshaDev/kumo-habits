@@ -62,13 +62,13 @@ export function UserProfileMenu({ level = 1, xp = 0 }: UserProfileMenuProps) {
     const supabase = createClient()
     await supabase.auth.signOut()
     setIsOpen(false)
-    router.push('/login')
+    router.replace('/login')
   }
 
   const handleLoginRedirect = () => {
     retroAudio.playCheck()
     setIsOpen(false)
-    router.push('/login')
+    router.replace('/login')
   }
 
   const userInitial = user?.email ? user.email.charAt(0).toUpperCase() : 'K'

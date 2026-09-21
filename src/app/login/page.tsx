@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Mail, Lock, ArrowRight, ShieldAlert, CheckCircle2, KeyRound, UserPlus, Loader2, Info, Heart } from 'lucide-react'
@@ -13,7 +13,45 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // Redirect to dashboard immediately if already authenticated
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        router.replace('/dashboard')
+      } else {
+        setCheckingAuth(false)
+      }
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        router.replace('/dashboard')
+      }
+    })
+
+    // Handle bfcache (when user presses back button in mobile browser)
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        supabase.auth.getUser().then(({ data }) => {
+          if (data?.user) {
+            router.replace('/dashboard')
+          }
+        })
+      }
+    }
+    window.addEventListener('pageshow', handlePageShow)
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('pageshow', handlePageShow)
+    }
+  }, [router])
 
   const handlePasswordAuth = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,7 +83,7 @@ export default function LoginPage() {
           text: '¡Cuenta creada con éxito!',
         })
         if (data?.session) {
-          router.push('/dashboard')
+          router.replace('/dashboard')
         }
       }
     } else {
@@ -60,7 +98,7 @@ export default function LoginPage() {
         setMessage({ type: 'error', text: error.message })
       } else {
         retroAudio.playLevelUp()
-        router.push('/dashboard')
+        router.replace('/dashboard')
       }
     }
   }
@@ -71,6 +109,19 @@ export default function LoginPage() {
       type: 'error',
       text: 'Acceso con Google y redes sociales en desarrollo. Por favor ingresa con correo y contraseña.',
     })
+  }
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] text-[#282321] flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#F28574]/20 to-[#EFA93A]/20 border border-[#EAE2D8] flex items-center justify-center shadow-xs">
+            <Loader2 className="w-5 h-5 animate-spin text-[#F28574]" />
+          </div>
+          <span className="text-xs font-mono text-[#8C7A70] tracking-wider uppercase">Cargando Kumo Habits...</span>
+        </div>
+      </div>
+    )
   }
 
   return (
